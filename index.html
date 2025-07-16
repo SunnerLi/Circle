@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>台北市機能地圖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    #map { height: 100vh; width: 100%; }
+
+    .marker-controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .color-button {
+      padding: 6px 12px;
+      margin: 2px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .custom-marker {
+      width: 25px;
+      height: 41px;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: 0 0 2px rgba(0,0,0,0.5);
+    }
+
+    .custom-marker::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      border-top-color: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- 控制面板 -->
+  <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-48">
+    <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_eight" class="accent-blue-600">
+      <span>八方雲集</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_m" class="accent-blue-600">
+      <span>麥當勞</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_mos" class="accent-blue-600">
+      <span>摩斯漢堡</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_dapu" class="accent-blue-600">
+      <span>鐵板燒</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_fuli" class="accent-blue-600">
+      <span>全聯福利中心</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_br" class="accent-blue-600">
+      <span>美而美</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_chang" class="accent-blue-600">
+      <span>鬍鬚張</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_liang" class="accent-blue-600">
+      <span>梁社漢</span>
+    </label>
+    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
+      <input type="checkbox" id="check_three" class="accent-blue-600">
+      <span>三商巧福</span>
+    </label>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // 建立地圖
+    const map = L.map('map').setView([25.0330, 121.5654], 13); // 台北市中心
+
+    // 加入 OpenStreetMap 圖層
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 創建data dict，用來收集資料：data = {'eight': {meta: [], marker: [], circle: []}, ...}
+    // ref: https://github.com/pointhi/leaflet-color-markers/tree/master/img
+    let data = {}
+    data['八方雲集'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'}
+    data['麥當勞']   = {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'}
+    data['摩斯漢堡'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#E40217'}
+    data['鐵板燒'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#50796C'}
+    data['全聯福利中心'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'}
+    data['美而美'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'}
+    data['鬍鬚張'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#F7C338'}
+    data['梁社漢'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#E98E3D'}
+    data['三商巧福'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'}
+
+    async function search(shop_name) {
+      // 如果尚未有搜尋資料，則先搜一次
+      if (!data[shop_name]["meta"]) {
+        // 使用 Overpass API 搜尋八方雲集
+        const query = `
+            [out:json][timeout:25];
+            area["name"="臺北市"]->.searchArea;
+            (
+                node["name"~"${shop_name}"](area.searchArea);
+                way["name"~"${shop_name}"](area.searchArea);
+                relation["name"~"${shop_name}"](area.searchArea);
+            );
+            out center;
+        `;
+
+        const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+
+        return fetch(url)
+        .then(res => res.json())
+        .then(res => {
+          data[shop_name]["meta"] = res
+        })
+      }
+    }
+
+    function compute(shop_name) {
+      if (data[shop_name]["meta"].elements.length > 0) {
+        data[shop_name]["circle"] = []
+        data[shop_name]["marker"] = []
+
+        data[shop_name]["meta"].elements.forEach(el => {
+          const lat = el.lat || el.center?.lat;
+          const lon = el.lon || el.center?.lon;
+
+          if (!lat || !lon) return;
+
+          const name = el.tags?.name || shop_name;
+
+          // 建立icon
+          const icon = L.icon({
+            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${data[shop_name]["color"]}.png`,
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            iconSize:     [25, 41],
+            iconAnchor:   [12, 41],
+            popupAnchor:  [1, -34],
+            shadowSize:   [41, 41]
+          });
+
+          // 加入 marker
+          // data[shop_name]["marker"] = data[shop_name]["marker"].concat(L.marker([lat, lon], {icon: icon}))
+          data[shop_name]["marker"] = data[shop_name]["marker"].concat(L.marker([lat, lon], {icon: createDivIcon(shop_name, data[shop_name]["color"])}))
+
+          // 畫出 500 公尺的圓
+          data[shop_name]["circle"] = data[shop_name]["circle"].concat(
+            L.circle([lat, lon], {
+              radius: 300,
+              color: data[shop_name]["color"],
+              fillOpacity: 0.1
+            })
+          )
+        });
+      }
+    }
+
+    function createDivIcon(shop_name, color) {
+      return L.divIcon({
+        className: '',
+        html: `<div class="custom-marker" style="background-color:${color}; border-top-color:${color};">
+                <span>${shop_name}</span>
+               </div>`,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [0, -41]
+      });
+    }
+
+    function draw(shop_name) {
+      if (data[shop_name]["circle"].length > 0) {
+        data[shop_name]["circle"].forEach(circle => {
+          circle.addTo(map)
+        })
+      }
+      if (data[shop_name]["marker"].length > 0) {
+        data[shop_name]["marker"].forEach(marker => {
+          marker.addTo(map).bindPopup(shop_name)
+        })
+      }
+    }
+
+    function erase(shop_name) {
+      if (data[shop_name]["circle"].length > 0) {
+        data[shop_name]["circle"].forEach(circle => {
+          map.removeLayer(circle)
+        })
+      }
+      if (data[shop_name]["marker"].length > 0) {
+        data[shop_name]["marker"].forEach(marker => {
+          map.removeLayer(marker)
+        })
+      }
+    }
+
+    function toggle(event, shop_name, color) {
+      if (event.target.checked) {
+        // 如果尚未有搜尋資料，則先搜一次
+        if (!data[shop_name]["meta"]) {
+          search(shop_name).then(() => {
+            compute(shop_name, color)
+            draw(shop_name)
+          })
+        } else {
+          compute(shop_name, color)
+          draw(shop_name)
+        }
+      } else {
+        if (data[shop_name]["circle"]) {
+          erase(shop_name)
+        }
+      }
+    }
+
+    // 綁定 checkbox 點擊事件
+    document.getElementById('check_eight').addEventListener('change', (event) => {toggle(event, "八方雲集")});
+    document.getElementById('check_m'    ).addEventListener('change', (event) => {toggle(event, "麥當勞")});
+    document.getElementById('check_mos'  ).addEventListener('change', (event) => {toggle(event, "摩斯漢堡")});
+    document.getElementById('check_dapu' ).addEventListener('change', (event) => {toggle(event, "鐵板燒")});
+    document.getElementById('check_fuli' ).addEventListener('change', (event) => {toggle(event, "全聯福利中心")});
+    document.getElementById('check_br'   ).addEventListener('change', (event) => {toggle(event, "美而美")});
+    document.getElementById('check_chang').addEventListener('change', (event) => {toggle(event, "鬍鬚張")});
+    document.getElementById('check_liang').addEventListener('change', (event) => {toggle(event, "梁社漢")});
+    document.getElementById('check_three').addEventListener('change', (event) => {toggle(event, "三商巧福")});
+  </script>
+</body>
+</html>
