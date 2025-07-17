@@ -308,13 +308,13 @@
     }
 
     // 回傳 300~1000ms 之間的隨機數
-    function getRandomDelay(min = 1000, max = 10000) {
+    function getRandomInteger(min = 1000, max = 10000) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     async function search(category_name, shop_name) {
       // 如果尚未有搜尋資料，則先搜一次
-      if (!data[category_name][shop_name]["meta"]) {
+      if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
         // 使用 Overpass API 搜尋八方雲集
         // const query = `
         //     [out:json][timeout:25];
@@ -349,19 +349,22 @@
         // 定義4個OpenStreetMap的API URL
         let urls = [
           'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query),
-          'https://overpass.openstreetmap.fr/api/interpreter?data=' + encodeURIComponent(query),
           'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(query),
-          'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(query)
+          'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(query),
         ]
 
-        // 透過fetch獲取資訊，失敗則換伺服器
-        for (const url of urls) {
+        // 透過fetch獲取資訊，失敗則睡覺一陣子後換伺服器，最多嘗試30次
+        for (let i = 0; i < 30; i++) {
+          let url = urls[getRandomInteger(0, 2)]
           try {
-            await sleep(getRandomDelay(1000, 30000))
             let res = await fetch(url)
             if (res.ok) {
               data[category_name][shop_name]["meta"] = await res.json()
-              break
+              if (data[category_name][shop_name]["meta"].elements.length > 0) {
+                break
+              }
+            } else {
+              await sleep(getRandomInteger(1000, 30000))
             }
           } catch (err) {
             console.warn(`Failed to fetch from ${url}`, err);
@@ -450,7 +453,7 @@
     function toggle_shop(event, category_name, shop_name) {
       if (event.target.checked) {
         // 如果尚未有搜尋資料，則先搜一次
-        if (!data[category_name][shop_name]["meta"]) {
+        if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
           search(category_name, shop_name).then(() => {
             compute(category_name, shop_name)
             draw(category_name, shop_name)
@@ -473,41 +476,55 @@
       const subCheckboxes = subList.querySelectorAll('input[type="checkbox"]')
 
       if (event.target.checked) {
+        expandSublist(category_id)
         subCheckboxes.forEach(cb => {if (!cb.checked) {cb.click()}});
       } else {
         subCheckboxes.forEach(cb => {if (cb.checked) {cb.click()}});
       }
     }
 
+    // 手動展開子列表
+    function expandSublist(mainId, expand = true) {
+      const mainCheckbox = document.getElementById(mainId);
+      const itemDiv = mainCheckbox?.closest(".mb-4");
+      const subList = itemDiv?.querySelector(".sub-list");
+      const toggleBtn = itemDiv?.querySelector(".toggle-btn");
+
+      if (subList && toggleBtn) {
+        subList.classList.toggle("open", expand);
+        toggleBtn.classList.toggle("open", expand);
+      }
+    }
+
     // 綁定內層列表點擊事件
-    document.getElementById('check_eight').addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "八方雲集")});
-    document.getElementById('check_four' ).addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "四海遊龍")});
+    document.getElementById('check_eight' ).addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "八方雲集")});
+    document.getElementById('check_four'  ).addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "四海遊龍")});
     document.getElementById('check_mc'    ).addEventListener('change', (event) => {toggle_shop(event, "速食", "麥當勞")});
-    document.getElementById('check_kfc'  ).addEventListener('change', (event) => {toggle_shop(event, "速食", "肯德基")});
-    document.getElementById('check_mos'  ).addEventListener('change', (event) => {toggle_shop(event, "速食", "摩斯漢堡")});
+    document.getElementById('check_kfc'   ).addEventListener('change', (event) => {toggle_shop(event, "速食", "肯德基")});
+    document.getElementById('check_mos'   ).addEventListener('change', (event) => {toggle_shop(event, "速食", "摩斯漢堡")});
     document.getElementById('check_dapu'  ).addEventListener('change', (event) => {toggle_shop(event, "鐵板燒（不限連鎖）", "鐵板燒")});
-    document.getElementById('check_px'   ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "全聯福利中心")});
-    document.getElementById('check_home' ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "家樂福")});
-    document.getElementById('check_mei'  ).addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "美而美")});
+    document.getElementById('check_px'    ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "全聯福利中心")});
+    document.getElementById('check_home'  ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "家樂福")});
+    document.getElementById('check_mei'   ).addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "美而美")});
     document.getElementById('check_hongya').addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "弘爺漢堡")});
-    document.getElementById('check_chang').addEventListener('change', (event) => {toggle_shop(event, "便當店", "鬍鬚張")});
-    document.getElementById('check_liang').addEventListener('change', (event) => {toggle_shop(event, "便當店", "梁社漢")});
-    document.getElementById('check_three').addEventListener('change', (event) => {toggle_shop(event, "便當店", "三商巧福")});
-    document.getElementById('check_self').addEventListener('change', (event) => {toggle_shop(event, "便當店", "自助餐")});
-    document.getElementById('check_lima').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "麗媽")});
-    document.getElementById('check_8kuo').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "8鍋")});
-    document.getElementById('check_3kuo').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三媽臭臭鍋")});
-    document.getElementById('check_3mao').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三顧茅廬")});
-    document.getElementById('check_six').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "六扇門")});
+    document.getElementById('check_chang' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "鬍鬚張")});
+    document.getElementById('check_liang' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "梁社漢")});
+    document.getElementById('check_three' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "三商巧福")});
+    document.getElementById('check_self'  ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "自助餐")});
+    document.getElementById('check_lima'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "麗媽")});
+    document.getElementById('check_8kuo'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "8鍋")});
+    document.getElementById('check_3kuo'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三媽臭臭鍋")});
+    document.getElementById('check_3mao'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三顧茅廬")});
+    document.getElementById('check_six'   ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "六扇門")});
 
     // 綁定外層列表點擊事件
     document.getElementById('check_dumpling').addEventListener('change', (event) => {toggle_category(event, "check_dumpling")});
-    document.getElementById('check_fast').addEventListener('change', (event) => {toggle_category(event, "check_fast")});
-    document.getElementById('check_iron').addEventListener('change', (event) => {toggle_category(event, "check_iron")});
-    document.getElementById('check_market').addEventListener('change', (event) => {toggle_category(event, "check_market")});
-    document.getElementById('check_br').addEventListener('change', (event) => {toggle_category(event, "check_br")});
+    document.getElementById('check_fast'    ).addEventListener('change', (event) => {toggle_category(event, "check_fast")});
+    document.getElementById('check_iron'    ).addEventListener('change', (event) => {toggle_category(event, "check_iron")});
+    document.getElementById('check_market'  ).addEventListener('change', (event) => {toggle_category(event, "check_market")});
+    document.getElementById('check_br'      ).addEventListener('change', (event) => {toggle_category(event, "check_br")});
     document.getElementById('check_bengdong').addEventListener('change', (event) => {toggle_category(event, "check_bengdong")});
-    document.getElementById('check_hotpod').addEventListener('change', (event) => {toggle_category(event, "check_hotpod")});
+    document.getElementById('check_hotpod'  ).addEventListener('change', (event) => {toggle_category(event, "check_hotpod")});
 
 
     // 綁定選單展開隱藏
