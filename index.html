@@ -12,8 +12,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    /* 地圖 */
     #map { height: 100vh; width: 100%; }
 
+    /* 店家標記 */
     .marker-controls {
       position: absolute;
       top: 10px;
@@ -53,50 +55,201 @@
       border: 6px solid transparent;
       border-top-color: inherit;
     }
+
+    /* 控制面板 */
+    .sub-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .sub-list.open {
+      max-height: 500px; /* 根據內容大小調整 */
+    }
+
+    .toggle-btn.open {
+      transform: rotate(90deg);
+      transition: transform 0.3s ease;
+    }
+
+    .toggle-btn {
+      transition: transform 0.3s ease;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
   <!-- 控制面板 -->
-  <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-48">
+  <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-48 font-sans">
     <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_eight" class="accent-blue-600">
-      <span>八方雲集</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_m" class="accent-blue-600">
-      <span>麥當勞</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_mos" class="accent-blue-600">
-      <span>摩斯漢堡</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_dapu" class="accent-blue-600">
-      <span>鐵板燒</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_fuli" class="accent-blue-600">
-      <span>全聯福利中心</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_br" class="accent-blue-600">
-      <span>美而美</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_chang" class="accent-blue-600">
-      <span>鬍鬚張</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_liang" class="accent-blue-600">
-      <span>梁社漢</span>
-    </label>
-    <label class="flex items-center space-x-2 mb-2 text-gray-700 text-sm">
-      <input type="checkbox" id="check_three" class="accent-blue-600">
-      <span>三商巧福</span>
-    </label>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_dumpling" class="form-checkbox" />
+          <label for="check_dumpling" class="text-gray-800">水餃/鍋貼</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_eight" class="form-checkbox" />
+          <label for="check_eight" class="text-sm text-gray-700">八方雲集</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_four" class="form-checkbox" />
+          <label for="check_four" class="text-sm text-gray-700">四海遊龍</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_fast" class="form-checkbox" />
+          <label for="check_fast" class="text-gray-800">速食</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_mc" class="form-checkbox" />
+          <label for="check_mc" class="text-sm text-gray-700">麥當勞</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_kfc" class="form-checkbox" />
+          <label for="check_kfc" class="text-sm text-gray-700">肯德基</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_mos" class="form-checkbox" />
+          <label for="check_mos" class="text-sm text-gray-700">摩斯漢堡</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_iron" class="form-checkbox" />
+          <label for="check_iron" class="text-gray-800">鐵板燒（不限連鎖）</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_dapu" class="form-checkbox" />
+          <label for="check_dapu" class="text-sm text-gray-700">鐵板燒</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_market" class="form-checkbox" />
+          <label for="check_market" class="text-gray-800">大賣場</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_px" class="form-checkbox" />
+          <label for="check_px" class="text-sm text-gray-700">全聯福利中心</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_home" class="form-checkbox" />
+          <label for="check_home" class="text-sm text-gray-700">家樂福</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_br" class="form-checkbox" />
+          <label for="check_br" class="text-gray-800">連鎖早餐店</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_mei" class="form-checkbox" />
+          <label for="check_mei" class="text-sm text-gray-700">美而美</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_hongya" class="form-checkbox" />
+          <label for="check_hongya" class="text-sm text-gray-700">弘爺漢堡</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_bengdong" class="form-checkbox" />
+          <label for="check_bengdong" class="text-gray-800">便當店</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_chang" class="form-checkbox" />
+          <label for="check_chang" class="text-sm text-gray-700">鬍鬚張</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_liang" class="form-checkbox" />
+          <label for="check_liang" class="text-sm text-gray-700">梁社漢</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_three" class="form-checkbox" />
+          <label for="check_three" class="text-sm text-gray-700">三商巧福</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_self" class="form-checkbox" />
+          <label for="check_self" class="text-sm text-gray-700">自助餐</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_hotpod" class="form-checkbox" />
+          <label for="check_hotpod" class="text-gray-800">平價火鍋</label>
+        </div>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 mt-2 space-y-2">
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_lima" class="form-checkbox" />
+          <label for="check_lima" class="text-sm text-gray-700">麗媽</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_8kuo" class="form-checkbox" />
+          <label for="check_8kuo" class="text-sm text-gray-700">8鍋</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_3kuo" class="form-checkbox" />
+          <label for="check_3kuo" class="text-sm text-gray-700">三媽臭臭鍋</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_3mao" class="form-checkbox" />
+          <label for="check_3mao" class="text-sm text-gray-700">三顧茅廬</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="check_six" class="form-checkbox" />
+          <label for="check_six" class="text-sm text-gray-700">六扇門</label>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Leaflet JS -->
@@ -113,48 +266,116 @@
 
     // 創建data dict，用來收集資料：data = {'eight': {meta: [], marker: [], circle: []}, ...}
     // ref: https://github.com/pointhi/leaflet-color-markers/tree/master/img
-    let data = {}
-    data['八方雲集'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'}
-    data['麥當勞']   = {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'}
-    data['摩斯漢堡'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#E40217'}
-    data['鐵板燒'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#50796C'}
-    data['全聯福利中心'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'}
-    data['美而美'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'}
-    data['鬍鬚張'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#F7C338'}
-    data['梁社漢'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#E98E3D'}
-    data['三商巧福'] = {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'}
-
-    async function search(shop_name) {
-      // 如果尚未有搜尋資料，則先搜一次
-      if (!data[shop_name]["meta"]) {
-        // 使用 Overpass API 搜尋八方雲集
-        const query = `
-            [out:json][timeout:25];
-            area["name"="臺北市"]->.searchArea;
-            (
-                node["name"~"${shop_name}"](area.searchArea);
-                way["name"~"${shop_name}"](area.searchArea);
-                relation["name"~"${shop_name}"](area.searchArea);
-            );
-            out center;
-        `;
-
-        const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
-
-        return fetch(url)
-        .then(res => res.json())
-        .then(res => {
-          data[shop_name]["meta"] = res
-        })
+    let data = {
+      '水餃/鍋貼': {
+        '八方雲集': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
+        '四海遊龍': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
+      },
+      '速食': {
+        '麥當勞': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
+        '肯德基': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
+        '摩斯漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
+      },
+      '鐵板燒（不限連鎖）': {
+        '鐵板燒': {'meta': null, 'marker': [], 'circle': [], 'color': '#50796C'},
+      },
+      '大賣場': {
+        '全聯福利中心': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
+        '家樂福': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
+      },
+      '連鎖早餐店': {
+        '美而美': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
+        '弘爺漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
+      },
+      '便當店': {
+        '鬍鬚張': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+        '梁社漢': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+        '三商巧福': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+        '自助餐': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+      },
+      '平價火鍋': {
+        '麗媽': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+        '8鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+        '三媽臭臭鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+        '三顧茅廬': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+        '六扇門': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
       }
     }
 
-    function compute(shop_name) {
-      if (data[shop_name]["meta"].elements.length > 0) {
-        data[shop_name]["circle"] = []
-        data[shop_name]["marker"] = []
+    // 暫停函式
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-        data[shop_name]["meta"].elements.forEach(el => {
+    // 回傳 300~1000ms 之間的隨機數
+    function getRandomDelay(min = 1000, max = 10000) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    async function search(category_name, shop_name) {
+      // 如果尚未有搜尋資料，則先搜一次
+      if (!data[category_name][shop_name]["meta"]) {
+        // 使用 Overpass API 搜尋八方雲集
+        // const query = `
+        //     [out:json][timeout:25];
+        //     area["name"="臺北市"]->.searchArea;
+        //     (
+        //         node["name"~"${shop_name}"](area.searchArea);
+        //         way["name"~"${shop_name}"](area.searchArea);
+        //         relation["name"~"${shop_name}"](area.searchArea);
+        //     );
+        //     out center;
+        // `;
+        const query = `
+            [out:json][timeout:25];
+
+            // 定義兩個 area
+            area["name"="臺北市"]->.taipei;
+            area["name"="新北市"]->.newtaipei;
+
+            // 將兩個 area 合併
+            (
+              node["name"~"${shop_name}"](area.taipei);
+              way["name"~"${shop_name}"](area.taipei);
+              relation["name"~"${shop_name}"](area.taipei);
+              
+              node["name"~"${shop_name}"](area.newtaipei);
+              way["name"~"${shop_name}"](area.newtaipei);
+              relation["name"~"${shop_name}"](area.newtaipei);
+            );
+            out center;
+        `
+
+        // 定義4個OpenStreetMap的API URL
+        let urls = [
+          'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query),
+          'https://overpass.openstreetmap.fr/api/interpreter?data=' + encodeURIComponent(query),
+          'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(query),
+          'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(query)
+        ]
+
+        // 透過fetch獲取資訊，失敗則換伺服器
+        for (const url of urls) {
+          try {
+            await sleep(getRandomDelay(1000, 30000))
+            let res = await fetch(url)
+            if (res.ok) {
+              data[category_name][shop_name]["meta"] = await res.json()
+              break
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch from ${url}`, err);
+          }
+        }
+      }
+    }
+
+    function compute(category_name, shop_name) {
+      if (data[category_name][shop_name]["meta"].elements.length > 0) {
+        data[category_name][shop_name]["circle"] = []
+        data[category_name][shop_name]["marker"] = []
+
+        data[category_name][shop_name]["meta"].elements.forEach(el => {
           const lat = el.lat || el.center?.lat;
           const lon = el.lon || el.center?.lon;
 
@@ -164,7 +385,7 @@
 
           // 建立icon
           const icon = L.icon({
-            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${data[shop_name]["color"]}.png`,
+            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${data[category_name][shop_name]["color"]}.png`,
             shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
             iconSize:     [25, 41],
             iconAnchor:   [12, 41],
@@ -174,13 +395,13 @@
 
           // 加入 marker
           // data[shop_name]["marker"] = data[shop_name]["marker"].concat(L.marker([lat, lon], {icon: icon}))
-          data[shop_name]["marker"] = data[shop_name]["marker"].concat(L.marker([lat, lon], {icon: createDivIcon(shop_name, data[shop_name]["color"])}))
+          data[category_name][shop_name]["marker"] = data[category_name][shop_name]["marker"].concat(L.marker([lat, lon], {icon: createDivIcon(shop_name, data[category_name][shop_name]["color"])}))
 
           // 畫出 500 公尺的圓
-          data[shop_name]["circle"] = data[shop_name]["circle"].concat(
+          data[category_name][shop_name]["circle"] = data[category_name][shop_name]["circle"].concat(
             L.circle([lat, lon], {
-              radius: 300,
-              color: data[shop_name]["color"],
+              radius: 200,
+              color: data[category_name][shop_name]["color"],
               fillOpacity: 0.1
             })
           )
@@ -200,61 +421,104 @@
       });
     }
 
-    function draw(shop_name) {
-      if (data[shop_name]["circle"].length > 0) {
-        data[shop_name]["circle"].forEach(circle => {
+    function draw(category_name, shop_name) {
+      if (data[category_name][shop_name]["circle"].length > 0) {
+        data[category_name][shop_name]["circle"].forEach(circle => {
           circle.addTo(map)
         })
       }
-      if (data[shop_name]["marker"].length > 0) {
-        data[shop_name]["marker"].forEach(marker => {
+      if (data[category_name][shop_name]["marker"].length > 0) {
+        data[category_name][shop_name]["marker"].forEach(marker => {
           marker.addTo(map).bindPopup(shop_name)
         })
       }
     }
 
-    function erase(shop_name) {
-      if (data[shop_name]["circle"].length > 0) {
-        data[shop_name]["circle"].forEach(circle => {
+    function erase(category_name, shop_name) {
+      if (data[category_name][shop_name]["circle"].length > 0) {
+        data[category_name][shop_name]["circle"].forEach(circle => {
           map.removeLayer(circle)
         })
       }
-      if (data[shop_name]["marker"].length > 0) {
-        data[shop_name]["marker"].forEach(marker => {
+      if (data[category_name][shop_name]["marker"].length > 0) {
+        data[category_name][shop_name]["marker"].forEach(marker => {
           map.removeLayer(marker)
         })
       }
     }
 
-    function toggle(event, shop_name, color) {
+    function toggle_shop(event, category_name, shop_name) {
       if (event.target.checked) {
         // 如果尚未有搜尋資料，則先搜一次
-        if (!data[shop_name]["meta"]) {
-          search(shop_name).then(() => {
-            compute(shop_name, color)
-            draw(shop_name)
+        if (!data[category_name][shop_name]["meta"]) {
+          search(category_name, shop_name).then(() => {
+            compute(category_name, shop_name)
+            draw(category_name, shop_name)
           })
         } else {
-          compute(shop_name, color)
-          draw(shop_name)
+          compute(category_name, shop_name)
+          draw(category_name, shop_name)
         }
       } else {
-        if (data[shop_name]["circle"]) {
-          erase(shop_name)
+        if (data[category_name][shop_name]["circle"]) {
+          erase(category_name, shop_name)
         }
       }
     }
 
-    // 綁定 checkbox 點擊事件
-    document.getElementById('check_eight').addEventListener('change', (event) => {toggle(event, "八方雲集")});
-    document.getElementById('check_m'    ).addEventListener('change', (event) => {toggle(event, "麥當勞")});
-    document.getElementById('check_mos'  ).addEventListener('change', (event) => {toggle(event, "摩斯漢堡")});
-    document.getElementById('check_dapu' ).addEventListener('change', (event) => {toggle(event, "鐵板燒")});
-    document.getElementById('check_fuli' ).addEventListener('change', (event) => {toggle(event, "全聯福利中心")});
-    document.getElementById('check_br'   ).addEventListener('change', (event) => {toggle(event, "美而美")});
-    document.getElementById('check_chang').addEventListener('change', (event) => {toggle(event, "鬍鬚張")});
-    document.getElementById('check_liang').addEventListener('change', (event) => {toggle(event, "梁社漢")});
-    document.getElementById('check_three').addEventListener('change', (event) => {toggle(event, "三商巧福")});
+    function toggle_category(event, category_id) {
+      const mainCheckbox = document.getElementById(category_id)
+      const itemDiv = mainCheckbox.closest('.mb-4')
+      const subList = itemDiv.querySelector('.sub-list')
+      const subCheckboxes = subList.querySelectorAll('input[type="checkbox"]')
+
+      if (event.target.checked) {
+        subCheckboxes.forEach(cb => {if (!cb.checked) {cb.click()}});
+      } else {
+        subCheckboxes.forEach(cb => {if (cb.checked) {cb.click()}});
+      }
+    }
+
+    // 綁定內層列表點擊事件
+    document.getElementById('check_eight').addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "八方雲集")});
+    document.getElementById('check_four' ).addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "四海遊龍")});
+    document.getElementById('check_mc'    ).addEventListener('change', (event) => {toggle_shop(event, "速食", "麥當勞")});
+    document.getElementById('check_kfc'  ).addEventListener('change', (event) => {toggle_shop(event, "速食", "肯德基")});
+    document.getElementById('check_mos'  ).addEventListener('change', (event) => {toggle_shop(event, "速食", "摩斯漢堡")});
+    document.getElementById('check_dapu'  ).addEventListener('change', (event) => {toggle_shop(event, "鐵板燒（不限連鎖）", "鐵板燒")});
+    document.getElementById('check_px'   ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "全聯福利中心")});
+    document.getElementById('check_home' ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "家樂福")});
+    document.getElementById('check_mei'  ).addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "美而美")});
+    document.getElementById('check_hongya').addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "弘爺漢堡")});
+    document.getElementById('check_chang').addEventListener('change', (event) => {toggle_shop(event, "便當店", "鬍鬚張")});
+    document.getElementById('check_liang').addEventListener('change', (event) => {toggle_shop(event, "便當店", "梁社漢")});
+    document.getElementById('check_three').addEventListener('change', (event) => {toggle_shop(event, "便當店", "三商巧福")});
+    document.getElementById('check_self').addEventListener('change', (event) => {toggle_shop(event, "便當店", "自助餐")});
+    document.getElementById('check_lima').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "麗媽")});
+    document.getElementById('check_8kuo').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "8鍋")});
+    document.getElementById('check_3kuo').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三媽臭臭鍋")});
+    document.getElementById('check_3mao').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三顧茅廬")});
+    document.getElementById('check_six').addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "六扇門")});
+
+    // 綁定外層列表點擊事件
+    document.getElementById('check_dumpling').addEventListener('change', (event) => {toggle_category(event, "check_dumpling")});
+    document.getElementById('check_fast').addEventListener('change', (event) => {toggle_category(event, "check_fast")});
+    document.getElementById('check_iron').addEventListener('change', (event) => {toggle_category(event, "check_iron")});
+    document.getElementById('check_market').addEventListener('change', (event) => {toggle_category(event, "check_market")});
+    document.getElementById('check_br').addEventListener('change', (event) => {toggle_category(event, "check_br")});
+    document.getElementById('check_bengdong').addEventListener('change', (event) => {toggle_category(event, "check_bengdong")});
+    document.getElementById('check_hotpod').addEventListener('change', (event) => {toggle_category(event, "check_hotpod")});
+
+
+    // 綁定選單展開隱藏
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const subList = btn.parentElement.nextElementSibling;
+        const isOpen = subList.classList.contains('open');
+        subList.classList.toggle('open', !isOpen);
+        btn.classList.toggle('open', !isOpen);
+      });
+    });
   </script>
 </body>
 </html>
