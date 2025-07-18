@@ -252,6 +252,13 @@
         </div>
         <div class="flex items-center space-x-1 w-1/3 mb-2">
           <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_chung"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">正忠排骨飯</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
             <input type="checkbox" id="check_three"
               class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
             <span class="text-sm text-gray-900">三商巧福</span>
@@ -405,6 +412,7 @@
       '便當店': {
         '鬍鬚張': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
         '梁社漢': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+        '正忠排骨飯': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
         '三商巧福': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
         '自助餐': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
       },
@@ -631,6 +639,7 @@
     document.getElementById('check_hongya').addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "弘爺漢堡")});
     document.getElementById('check_chang' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "鬍鬚張")});
     document.getElementById('check_liang' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "梁社漢")});
+    document.getElementById('check_chung' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "正忠排骨飯")});
     document.getElementById('check_three' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "三商巧福")});
     document.getElementById('check_self'  ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "自助餐")});
     document.getElementById('check_lima'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "麗媽")});
