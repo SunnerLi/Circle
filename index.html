@@ -315,7 +315,57 @@
         </div>
       </div>
     </div>
+
+    <div class="mb-4 border-b border-gray-300">
+      <div class="flex justify-between items-center">
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_dong"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">日本連鎖丼飯店</span>
+        </label>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_sukiya"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">すき家</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_gi"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">吉野家</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4 border-b border-gray-300">
+      <div class="flex justify-between items-center">
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_italy"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">平價義大利麵</span>
+        </label>
+        <button class="toggle-btn text-gray-600">▶</button>
+      </div>
+  
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_saliya"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">薩莉亞</span>
+          </label>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -364,7 +414,14 @@
         '三媽臭臭鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
         '三顧茅廬': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
         '六扇門': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-      }
+      },
+      '日本連鎖丼飯店': {
+        'すき家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
+        '吉野家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
+      },
+      '平價義大利麵': {
+        '薩莉亞': {'meta': null, 'marker': [], 'circle': [], 'color': '#2EA55E'},
+      },
     }
 
     // 暫停函式
@@ -581,6 +638,9 @@
     document.getElementById('check_3kuo'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三媽臭臭鍋")});
     document.getElementById('check_3mao'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三顧茅廬")});
     document.getElementById('check_six'   ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "六扇門")});
+    document.getElementById('check_sukiya').addEventListener('change', (event) => {toggle_shop(event, "日本連鎖丼飯店", "すき家")});
+    document.getElementById('check_gi'    ).addEventListener('change', (event) => {toggle_shop(event, "日本連鎖丼飯店", "吉野家")});
+    document.getElementById('check_saliya').addEventListener('change', (event) => {toggle_shop(event, "平價義大利麵", "薩莉亞")});
 
     // 綁定外層列表點擊事件
     document.getElementById('check_dumpling').addEventListener('change', (event) => {toggle_category(event, "check_dumpling")});
@@ -590,6 +650,8 @@
     document.getElementById('check_br'      ).addEventListener('change', (event) => {toggle_category(event, "check_br")});
     document.getElementById('check_bengdong').addEventListener('change', (event) => {toggle_category(event, "check_bengdong")});
     document.getElementById('check_hotpod'  ).addEventListener('change', (event) => {toggle_category(event, "check_hotpod")});
+    document.getElementById('check_dong'    ).addEventListener('change', (event) => {toggle_category(event, "check_dong")});
+    document.getElementById('check_italy'   ).addEventListener('change', (event) => {toggle_category(event, "check_italy")});
 
 
     // 綁定選單展開隱藏
