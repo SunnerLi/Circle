@@ -81,19 +81,24 @@
   <div id="map"></div>
 
   <!-- 控制面板 -->
-  <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-48 font-sans">
+  <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-96 font-sans">
     <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_dumpling" class="form-checkbox" />
           <label for="check_dumpling" class="text-gray-800">水餃/鍋貼</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_dumpling"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">水餃/鍋貼</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_eight" class="form-checkbox" />
           <label for="check_eight" class="text-sm text-gray-700">八方雲集</label>
@@ -102,19 +107,46 @@
           <input type="checkbox" id="check_four" class="form-checkbox" />
           <label for="check_four" class="text-sm text-gray-700">四海遊龍</label>
         </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="radio" id="check_eight" class="custom-checkbox" />
+          <label for="check_eight" class="text-sm text-gray-700">八方雲集</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_eight"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">八方雲集</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="radio" id="check_four" class="custom-checkbox" />
+          <label for="check_four" class="text-sm text-gray-700">四海遊龍</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_four"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">四海遊龍</span>
+          </label>
+        </div>
       </div>
+  
     </div>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_fast" class="form-checkbox" />
           <label for="check_fast" class="text-gray-800">速食</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_fast"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">速食</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_mc" class="form-checkbox" />
           <label for="check_mc" class="text-sm text-gray-700">麥當勞</label>
@@ -127,36 +159,88 @@
           <input type="checkbox" id="check_mos" class="form-checkbox" />
           <label for="check_mos" class="text-sm text-gray-700">摩斯漢堡</label>
         </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_mc" class="form-checkbox" />
+          <label for="check_mc" class="text-sm text-gray-700">麥當勞</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_mc"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">麥當勞</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_kfc" class="form-checkbox" />
+          <label for="check_kfc" class="text-sm text-gray-700">肯德基</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_kfc"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">肯德基</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_mos" class="form-checkbox" />
+          <label for="check_mos" class="text-sm text-gray-700">摩斯漢堡</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_mos"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">摩斯漢堡</span>
+          </label>
+        </div>
       </div>
     </div>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_iron" class="form-checkbox" />
           <label for="check_iron" class="text-gray-800">鐵板燒（不限連鎖）</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_iron"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">鐵板燒（不限連鎖）</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_dapu" class="form-checkbox" />
           <label for="check_dapu" class="text-sm text-gray-700">鐵板燒</label>
         </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_dapu" class="form-checkbox" />
+          <label for="check_dapu" class="text-sm text-gray-700">鐵板燒</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_dapu"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">鐵板燒</span>
+          </label>
+        </div>
       </div>
     </div>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_market" class="form-checkbox" />
           <label for="check_market" class="text-gray-800">大賣場</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_market"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">大賣場</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_px" class="form-checkbox" />
           <label for="check_px" class="text-sm text-gray-700">全聯福利中心</label>
@@ -165,19 +249,45 @@
           <input type="checkbox" id="check_home" class="form-checkbox" />
           <label for="check_home" class="text-sm text-gray-700">家樂福</label>
         </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_px" class="form-checkbox" />
+          <label for="check_px" class="text-sm text-gray-700">全聯福利中心</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_px"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">全聯福利中心</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_home" class="form-checkbox" />
+          <label for="check_home" class="text-sm text-gray-700">家樂福</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_home"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">家樂福</span>
+          </label>
+        </div>
       </div>
     </div>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_br" class="form-checkbox" />
           <label for="check_br" class="text-gray-800">連鎖早餐店</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_br"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">連鎖早餐店</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_mei" class="form-checkbox" />
           <label for="check_mei" class="text-sm text-gray-700">美而美</label>
@@ -186,19 +296,45 @@
           <input type="checkbox" id="check_hongya" class="form-checkbox" />
           <label for="check_hongya" class="text-sm text-gray-700">弘爺漢堡</label>
         </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_mei" class="form-checkbox" />
+          <label for="check_mei" class="text-sm text-gray-700">美而美</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_mei"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">美而美</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_hongya" class="form-checkbox" />
+          <label for="check_hongya" class="text-sm text-gray-700">弘爺漢堡</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_hongya"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">弘爺漢堡</span>
+          </label>
+        </div>
       </div>
     </div>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_bengdong" class="form-checkbox" />
           <label for="check_bengdong" class="text-gray-800">便當店</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_bengdong"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">便當店</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_chang" class="form-checkbox" />
           <label for="check_chang" class="text-sm text-gray-700">鬍鬚張</label>
@@ -215,19 +351,63 @@
           <input type="checkbox" id="check_self" class="form-checkbox" />
           <label for="check_self" class="text-sm text-gray-700">自助餐</label>
         </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_chang" class="form-checkbox" />
+          <label for="check_chang" class="text-sm text-gray-700">鬍鬚張</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_chang"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">鬍鬚張</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_liang" class="form-checkbox" />
+          <label for="check_liang" class="text-sm text-gray-700">梁社漢</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_liang"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">梁社漢</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_three" class="form-checkbox" />
+          <label for="check_three" class="text-sm text-gray-700">三商巧福</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_three"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">三商巧福</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_self" class="form-checkbox" />
+          <label for="check_self" class="text-sm text-gray-700">自助餐</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_self"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">自助餐</span>
+          </label>
+        </div>
       </div>
     </div>
 
     <div class="mb-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_hotpod" class="form-checkbox" />
           <label for="check_hotpod" class="text-gray-800">平價火鍋</label>
-        </div>
+        </div> -->
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="check_hotpod"
+            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">平價火鍋</span>
+        </label>
         <button class="toggle-btn text-gray-600">▶</button>
       </div>
 
-      <div class="sub-list pl-6 mt-2 space-y-2">
+      <!-- <div class="sub-list pl-6 mt-2 space-y-2">
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_lima" class="form-checkbox" />
           <label for="check_lima" class="text-sm text-gray-700">麗媽</label>
@@ -247,6 +427,54 @@
         <div class="flex items-center space-x-2">
           <input type="checkbox" id="check_six" class="form-checkbox" />
           <label for="check_six" class="text-sm text-gray-700">六扇門</label>
+        </div>
+      </div> -->
+
+      <div class="sub-list pl-6 flex flex-wrap mt-2">
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_lima" class="form-checkbox" />
+          <label for="check_lima" class="text-sm text-gray-700">麗媽</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_lima"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">麗媽</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_8kuo" class="form-checkbox" />
+          <label for="check_8kuo" class="text-sm text-gray-700">8鍋</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_8kuo"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">8鍋</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_3kuo" class="form-checkbox" />
+          <label for="check_3kuo" class="text-sm text-gray-700">三媽臭臭鍋</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_3kuo"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">三媽臭臭鍋</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_3mao" class="form-checkbox" />
+          <label for="check_3mao" class="text-sm text-gray-700">三顧茅廬</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_3mao"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">三顧茅廬</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-1 w-1/3 mb-2">
+          <!-- <input type="checkbox" id="check_six" class="form-checkbox" />
+          <label for="check_six" class="text-sm text-gray-700">六扇門</label> -->
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check_six"
+              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">六扇門</span>
+          </label>
         </div>
       </div>
     </div>
