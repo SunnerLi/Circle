@@ -1,3 +1,4 @@
+<!-- Usage: python3 -m http.server -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +11,9 @@
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- sql.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
 
   <style>
     /* 地圖 */
@@ -80,466 +84,363 @@
 <body>
   <div id="map"></div>
 
+  <button onclick="export_db()" class="absolute bottom-2 right-2 mt-4 px-4 py-2 bg-blue-500 text-white z-[1000] rounded-lg">
+    下載 SQLite 資料庫
+  </button>
+
   <!-- 控制面板 -->
   <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-96 font-sans">
     <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_dumpling"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">水餃/鍋貼</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_eight"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">八方雲集</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_four"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">四海遊龍</span>
-          </label>
-        </div>
-      </div>
-  
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_fast"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">速食</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_mc"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">麥當勞</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_kfc"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">肯德基</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_mos"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">摩斯漢堡</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_iron"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">鐵板燒（不限連鎖）</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_dapu"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">鐵板燒</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_market"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">大賣場</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_px"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">全聯福利中心</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_home"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">家樂福</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_br"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">連鎖早餐店</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_mei"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">美而美</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_hongya"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">弘爺漢堡</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_bengdong"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">便當店</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_chang"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">鬍鬚張</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_liang"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">梁社漢</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_chung"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">正忠排骨飯</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_three"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">三商巧福</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_self"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">自助餐</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_hotpod"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">平價火鍋</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_lima"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">麗媽</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_8kuo"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">8鍋</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_3kuo"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">三媽臭臭鍋</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_3mao"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">三顧茅廬</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_six"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">六扇門</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_dong"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">日本連鎖丼飯店</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_sukiya"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">すき家</span>
-          </label>
-        </div>
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_gi"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">吉野家</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-4 border-b border-gray-300">
-      <div class="flex justify-between items-center">
-        <label class="inline-flex items-center space-x-2 cursor-pointer">
-          <input type="checkbox" id="check_italy"
-            class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-          <span class="text-sm text-gray-900">平價義大利麵</span>
-        </label>
-        <button class="toggle-btn text-gray-600">▶</button>
-      </div>
-  
-      <div class="sub-list pl-6 flex flex-wrap mt-2">
-        <div class="flex items-center space-x-1 w-1/3 mb-2">
-          <label class="inline-flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="check_saliya"
-              class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
-            <span class="text-sm text-gray-900">薩莉亞</span>
-          </label>
-        </div>
-      </div>
-    </div>
   </div>
-</div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
+    // 建立資料庫物件
+    let db = null;
+    let SQL = null;
+
     // 建立地圖
     const map = L.map('map').setView([25.0330, 121.5654], 13); // 台北市中心
+
+    // 宣告圖層相關物件
+    let circles = {}
+    let markers = {}
 
     // 加入 OpenStreetMap 圖層
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // 創建data dict，用來收集資料：data = {'eight': {meta: [], marker: [], circle: []}, ...}
-    // ref: https://github.com/pointhi/leaflet-color-markers/tree/master/img
-    let data = {
-      '水餃/鍋貼': {
-        '八方雲集': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
-        '四海遊龍': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
-      },
-      '速食': {
-        '麥當勞': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
-        '肯德基': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
-        '摩斯漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
-      },
-      '鐵板燒（不限連鎖）': {
-        '鐵板燒': {'meta': null, 'marker': [], 'circle': [], 'color': '#50796C'},
-      },
-      '大賣場': {
-        '全聯福利中心': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
-        '家樂福': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
-      },
-      '連鎖早餐店': {
-        '美而美': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
-        '弘爺漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
-      },
-      '便當店': {
-        '鬍鬚張': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-        '梁社漢': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-        '正忠排骨飯': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-        '三商巧福': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-        '自助餐': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-      },
-      '平價火鍋': {
-        '麗媽': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-        '8鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-        '三媽臭臭鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-        '三顧茅廬': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-        '六扇門': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-      },
-      '日本連鎖丼飯店': {
-        'すき家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
-        '吉野家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
-      },
-      '平價義大利麵': {
-        '薩莉亞': {'meta': null, 'marker': [], 'circle': [], 'color': '#2EA55E'},
-      },
-    }
+    // 初始化 sql.js 與資料庫
+    initSqlJs({ 
+      locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
+    }).then(_SQL => {
+      SQL = _SQL;
+      load_db("shops.sqlite");
+    });
 
     // 暫停函式
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // 回傳 300~1000ms 之間的隨機數
-    function getRandomInteger(min = 1000, max = 10000) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    // 載入本地資料庫
+    async function load_db(filename) {
+      try {
+        const res = await fetch(filename);
+        if (!res.ok) {
+          console.warn(`${filename} 不存在，創建新資料庫`);
+          db = new SQL.Database();
+          create_db();
+          return;
+        }
+
+        const buf = await res.arrayBuffer();
+        const u8 = new Uint8Array(buf);
+        db = new SQL.Database(u8);
+        console.log(`${filename} 載入成功`);
+      } catch (err) {
+        console.error("載入資料庫發生錯誤:", err);
+        db = new SQL.Database();
+        create_db();
+      }
     }
 
-    async function search(category_name, shop_name) {
-      // 如果尚未有搜尋資料，則先搜一次
-      if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
-        // 使用 Overpass API 搜尋八方雲集
-        // const query = `
-        //     [out:json][timeout:25];
-        //     area["name"="臺北市"]->.searchArea;
-        //     (
-        //         node["name"~"${shop_name}"](area.searchArea);
-        //         way["name"~"${shop_name}"](area.searchArea);
-        //         relation["name"~"${shop_name}"](area.searchArea);
-        //     );
-        //     out center;
-        // `;
-        const query = `
-            [out:json][timeout:25];
+    // 創建表格函式
+    function create_db() {
+      const createTableSQL = `
+        CREATE TABLE IF NOT EXISTS shops (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          city TEXT,
+          category TEXT,
+          shop TEXT,
+          latitude REAL,
+          longitude REAL,
+          color TEXT
+        );
+      `;
+      db.run(createTableSQL);
+    }
 
-            // 定義兩個 area
-            area["name"="臺北市"]->.taipei;
-            area["name"="新北市"]->.newtaipei;
+    // 查詢本地資料庫
+    function query_db(cities, category, shop) {
+      create_db();
+      const placeholders = cities.map(() => '?').join(',');
+      const stmt = db.prepare(`
+        SELECT * FROM shops
+        WHERE city IN (${placeholders}) AND category = ? AND shop = ?;
+      `);
+      const result = [];
+      stmt.bind([...cities, category, shop]);
+      while (stmt.step()) {
+        result.push(stmt.getAsObject());
+      }
+      stmt.free();
+      return result;
+    }
 
-            // 將兩個 area 合併
-            (
-              node["name"~"${shop_name}"](area.taipei);
-              way["name"~"${shop_name}"](area.taipei);
-              relation["name"~"${shop_name}"](area.taipei);
-              
-              node["name"~"${shop_name}"](area.newtaipei);
-              way["name"~"${shop_name}"](area.newtaipei);
-              relation["name"~"${shop_name}"](area.newtaipei);
-            );
-            out center;
-        `
+    // 查詢Open Street伺服器
+    async function query_server(cities, category, shop, color) {
+      const data = query_db(cities, category, shop);
+      if (data.length > 0) {
+        console.log("DB has data:", data);
+        return data;
+      }
 
-        // 定義4個OpenStreetMap的API URL
-        let urls = [
-          'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query),
-          'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(query),
-          'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(query),
-        ]
+      let allResults = [];
+      for (const city of cities) {
+        const overpassQuery = `
+          [out:json][timeout:25];
+          area["name"="${city}"]->.searchArea;
+          (
+            node["name"~"${shop}"](area.searchArea);
+            way["name"~"${shop}"](area.searchArea);
+            relation["name"~"${shop}"](area.searchArea);
+          );
+          out center;
+        `;
+        // console.log(overpassQuery)
 
-        // 透過fetch獲取資訊，失敗則睡覺一陣子後換伺服器，最多嘗試30次
-        for (let i = 0; i < 30; i++) {
-          let url = urls[getRandomInteger(0, 2)]
+        for (let i = 0; i < 5; i++) {
+          // 定義OpenStreetMap的API URL
+          const url = [
+            'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(overpassQuery),
+            'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(overpassQuery),
+            'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(overpassQuery),
+          ][Math.floor(Math.random() * (2 - 0 + 1)) + 0]
+
           try {
-            let res = await fetch(url)
+            console.log(url)
+            const res = await fetch(url);
             if (res.ok) {
-              data[category_name][shop_name]["meta"] = await res.json()
-              if (data[category_name][shop_name]["meta"].elements.length > 0) {
+              const json = await res.json();
+              console.log(`第${i}次. #${shop}: ` + json.elements.length)
+              if (json.elements.length > 0) {
+                update_db(json, city, category, shop, color);
+                allResults.push(...json.elements);
                 break
               }
             } else {
-              await sleep(getRandomInteger(1000, 30000))
+              console.log(`第${i}次不ok.`)
+              await sleep(Math.floor(Math.random() * (30000 - 1000 + 1)) + 1000)
             }
-          } catch (err) {
-            console.warn(`Failed to fetch from ${url}`, err);
+          } catch (e) {
+            console.error("Failed Overpass API for city:", city, e);
           }
         }
       }
+
+      return query_db(cities, category, shop);
     }
 
-    function compute(category_name, shop_name) {
-      if (data[category_name][shop_name]["meta"].elements.length > 0) {
-        data[category_name][shop_name]["circle"] = []
-        data[category_name][shop_name]["marker"] = []
+    // 更新本地資料庫
+    function update_db(res, city, category, shop, color) {
+      console.log(res)
+      console.log(city)
+      console.log(category)
+      console.log(shop)
+      console.log(color)
+      try {
+        const insertSQL = `
+          INSERT INTO shops (city, category, shop, latitude, longitude, color)
+          VALUES (?, ?, ?, ?, ?, ?);
+        `;
+        const stmt = db.prepare(insertSQL);
 
-        data[category_name][shop_name]["meta"].elements.forEach(el => {
-          const lat = el.lat || el.center?.lat;
-          const lon = el.lon || el.center?.lon;
+        for (const el of res.elements) {
+          console.log(el)
+          let lat = el.lat || (el.center && el.center.lat);
+          let lon = el.lon || (el.center && el.center.lon);
+          if (lat !== undefined && lon !== undefined) {
+            stmt.run([city, category, shop, lat, lon, color]);
+          }
+        }
 
-          if (!lat || !lon) return;
-
-          const name = el.tags?.name || shop_name;
-
-          // 建立icon
-          const icon = L.icon({
-            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${data[category_name][shop_name]["color"]}.png`,
-            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-            iconSize:     [25, 41],
-            iconAnchor:   [12, 41],
-            popupAnchor:  [1, -34],
-            shadowSize:   [41, 41]
-          });
-
-          // 加入 marker
-          // data[shop_name]["marker"] = data[shop_name]["marker"].concat(L.marker([lat, lon], {icon: icon}))
-          data[category_name][shop_name]["marker"] = data[category_name][shop_name]["marker"].concat(L.marker([lat, lon], {icon: createDivIcon(shop_name, data[category_name][shop_name]["color"])}))
-
-          // 畫出 500 公尺的圓
-          data[category_name][shop_name]["circle"] = data[category_name][shop_name]["circle"].concat(
-            L.circle([lat, lon], {
-              radius: 200,
-              color: data[category_name][shop_name]["color"],
-              fillOpacity: 0.1
-            })
-          )
-        });
+        stmt.free();
+      } catch (e) {
+        console.error("[錯誤]", e)
       }
+    }
+
+    function export_db() {
+      const binaryArray = db.export(); // 匯出為 Uint8Array
+      const blob = new Blob([binaryArray], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "shops.sqlite"; // 你要下載的檔名
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // // 創建data dict，用來收集資料：data = {'eight': {meta: [], marker: [], circle: []}, ...}
+    // // ref: https://github.com/pointhi/leaflet-color-markers/tree/master/img
+    // let data = {
+    //   '水餃/鍋貼': {
+    //     '八方雲集': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
+    //     '四海遊龍': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
+    //   },
+    //   '速食': {
+    //     '麥當勞': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
+    //     '肯德基': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
+    //     '摩斯漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
+    //   },
+    //   '鐵板燒（不限連鎖）': {
+    //     '鐵板燒': {'meta': null, 'marker': [], 'circle': [], 'color': '#50796C'},
+    //   },
+    //   '大賣場': {
+    //     '全聯福利中心': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
+    //     '家樂福': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
+    //   },
+    //   '連鎖早餐店': {
+    //     '美而美': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
+    //     '弘爺漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
+    //   },
+    //   '便當店': {
+    //     '鬍鬚張': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+    //     '梁社漢': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+    //     '正忠排骨飯': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+    //     '三商巧福': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+    //     '自助餐': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
+    //   },
+    //   '平價火鍋': {
+    //     '麗媽': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+    //     '8鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+    //     '三媽臭臭鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+    //     '三顧茅廬': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+    //     '六扇門': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
+    //   },
+    //   '日本連鎖丼飯店': {
+    //     'すき家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
+    //     '吉野家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
+    //   },
+    //   '平價義大利麵': {
+    //     '薩莉亞': {'meta': null, 'marker': [], 'circle': [], 'color': '#2EA55E'},
+    //   },
+    // }
+
+    // // 回傳 300~1000ms 之間的隨機數
+    // function getRandomInteger(min = 1000, max = 10000) {
+    //   return Math.floor(Math.random() * (max - min + 1)) + min;
+    // }
+
+    // async function search(category_name, shop_name) {
+    //   // 如果尚未有搜尋資料，則先搜一次
+    //   if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
+    //     // 使用 Overpass API 搜尋八方雲集
+    //     // const query = `
+    //     //     [out:json][timeout:25];
+    //     //     area["name"="臺北市"]->.searchArea;
+    //     //     (
+    //     //         node["name"~"${shop_name}"](area.searchArea);
+    //     //         way["name"~"${shop_name}"](area.searchArea);
+    //     //         relation["name"~"${shop_name}"](area.searchArea);
+    //     //     );
+    //     //     out center;
+    //     // `;
+    //     const query = `
+    //         [out:json][timeout:25];
+
+    //         // 定義兩個 area
+    //         area["name"="臺北市"]->.taipei;
+    //         area["name"="新北市"]->.newtaipei;
+
+    //         // 將兩個 area 合併
+    //         (
+    //           node["name"~"${shop_name}"](area.taipei);
+    //           way["name"~"${shop_name}"](area.taipei);
+    //           relation["name"~"${shop_name}"](area.taipei);
+              
+    //           node["name"~"${shop_name}"](area.newtaipei);
+    //           way["name"~"${shop_name}"](area.newtaipei);
+    //           relation["name"~"${shop_name}"](area.newtaipei);
+    //         );
+    //         out center;
+    //     `
+
+    //     // 定義4個OpenStreetMap的API URL
+    //     let urls = [
+    //       'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query),
+    //       'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(query),
+    //       'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(query),
+    //     ]
+
+    //     // 透過fetch獲取資訊，失敗則睡覺一陣子後換伺服器，最多嘗試30次
+    //     for (let i = 0; i < 30; i++) {
+    //       let url = urls[getRandomInteger(0, 2)]
+    //       try {
+    //         let res = await fetch(url)
+    //         if (res.ok) {
+    //           data[category_name][shop_name]["meta"] = await res.json()
+    //           if (data[category_name][shop_name]["meta"].elements.length > 0) {
+    //             break
+    //           }
+    //         } else {
+    //           await sleep(getRandomInteger(1000, 30000))
+    //         }
+    //       } catch (err) {
+    //         console.warn(`Failed to fetch from ${url}`, err);
+    //       }
+    //     }
+    //   }
+    // }
+
+    // function compute(category_name, shop_name) {
+    //   if (data[category_name][shop_name]["meta"].elements.length > 0) {
+    //     data[category_name][shop_name]["circle"] = []
+    //     data[category_name][shop_name]["marker"] = []
+
+    //     data[category_name][shop_name]["meta"].elements.forEach(el => {
+    //       const lat = el.lat || el.center?.lat;
+    //       const lon = el.lon || el.center?.lon;
+
+    //       if (!lat || !lon) return;
+
+    //       const name = el.tags?.name || shop_name;
+
+    //       // 建立icon
+    //       const icon = L.icon({
+    //         iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${data[category_name][shop_name]["color"]}.png`,
+    //         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    //         iconSize:     [25, 41],
+    //         iconAnchor:   [12, 41],
+    //         popupAnchor:  [1, -34],
+    //         shadowSize:   [41, 41]
+    //       });
+
+    //       // 加入 marker
+    //       data[category_name][shop_name]["marker"] = data[category_name][shop_name]["marker"].concat(L.marker([lat, lon], {icon: createDivIcon(shop_name, data[category_name][shop_name]["color"])}))
+
+    //       // 畫出 500 公尺的圓
+    //       data[category_name][shop_name]["circle"] = data[category_name][shop_name]["circle"].concat(
+    //         L.circle([lat, lon], {
+    //           radius: 200,
+    //           color: data[category_name][shop_name]["color"],
+    //           fillOpacity: 0.1
+    //         })
+    //       )
+    //     });
+    //   }
+    // }
+
+    function compute(rows) {
+      rows.forEach(row => {
+        markers[row.category][row.shop] = markers[row.category][row.shop].concat(
+          L.marker([row.latitude, row.longitude], {icon: createDivIcon(row.shop, row.color)})
+        )
+        circles[row.category][row.shop] = circles[row.category][row.shop].concat(
+          L.circle([row.latitude, row.longitude], {
+            radius: 200,
+            color: row.color,
+            fillOpacity: 0.1
+          })
+        )
+      })
     }
 
     function createDivIcon(shop_name, color) {
@@ -554,48 +455,77 @@
       });
     }
 
-    function draw(category_name, shop_name) {
-      if (data[category_name][shop_name]["circle"].length > 0) {
-        data[category_name][shop_name]["circle"].forEach(circle => {
-          circle.addTo(map)
-        })
-      }
-      if (data[category_name][shop_name]["marker"].length > 0) {
-        data[category_name][shop_name]["marker"].forEach(marker => {
-          marker.addTo(map).bindPopup(shop_name)
-        })
-      }
+    // function draw(category_name, shop_name) {
+    //   if (data[category_name][shop_name]["circle"].length > 0) {
+    //     data[category_name][shop_name]["circle"].forEach(circle => {
+    //       circle.addTo(map)
+    //     })
+    //   }
+    //   if (data[category_name][shop_name]["marker"].length > 0) {
+    //     data[category_name][shop_name]["marker"].forEach(marker => {
+    //       marker.addTo(map).bindPopup(shop_name)
+    //     })
+    //   }
+    // }
+
+    // function erase(category_name, shop_name) {
+    //   if (data[category_name][shop_name]["circle"].length > 0) {
+    //     data[category_name][shop_name]["circle"].forEach(circle => {
+    //       map.removeLayer(circle)
+    //     })
+    //   }
+    //   if (data[category_name][shop_name]["marker"].length > 0) {
+    //     data[category_name][shop_name]["marker"].forEach(marker => {
+    //       map.removeLayer(marker)
+    //     })
+    //   }
+    // }
+
+    function draw(category, shop) {
+      circles[category][shop].forEach(circle => {
+        circle.addTo(map)
+      })
+      markers[category][shop].forEach(marker => {
+        marker.addTo(map).bindPopup(shop)
+      })
     }
 
-    function erase(category_name, shop_name) {
-      if (data[category_name][shop_name]["circle"].length > 0) {
-        data[category_name][shop_name]["circle"].forEach(circle => {
-          map.removeLayer(circle)
-        })
-      }
-      if (data[category_name][shop_name]["marker"].length > 0) {
-        data[category_name][shop_name]["marker"].forEach(marker => {
-          map.removeLayer(marker)
-        })
-      }
+    function erase(category, shop) {
+      circles[category][shop].forEach(circle => {
+        map.removeLayer(circle)
+      })
+      markers[category][shop].forEach(marker => {
+        map.removeLayer(marker)
+      })
     }
 
-    function toggle_shop(event, category_name, shop_name) {
+    // function toggle_shop(event, category_name, shop_name) {
+    //   if (event.target.checked) {
+    //     // 如果尚未有搜尋資料，則先搜一次
+    //     if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
+    //       search(category_name, shop_name).then(() => {
+    //         compute(category_name, shop_name)
+    //         draw(category_name, shop_name)
+    //       })
+    //     } else {
+    //       compute(category_name, shop_name)
+    //       draw(category_name, shop_name)
+    //     }
+    //   } else {
+    //     if (data[category_name][shop_name]["circle"]) {
+    //       erase(category_name, shop_name)
+    //     }
+    //   }
+    // }
+
+    function toggle_shop(event, cities, category, shop, color) {
       if (event.target.checked) {
-        // 如果尚未有搜尋資料，則先搜一次
-        if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
-          search(category_name, shop_name).then(() => {
-            compute(category_name, shop_name)
-            draw(category_name, shop_name)
-          })
-        } else {
-          compute(category_name, shop_name)
-          draw(category_name, shop_name)
-        }
+        query_server(cities, category, shop, color).then(rows => {
+          compute(rows)
+          draw(category, shop)
+        })
       } else {
-        if (data[category_name][shop_name]["circle"]) {
-          erase(category_name, shop_name)
-        }
+        erase(category, shop)
       }
     }
 
@@ -613,6 +543,34 @@
       }
     }
 
+    // UI渲染函數
+    function createCategoryBlock({ id, label, items }) {
+      const container = document.createElement("div");
+      container.className = "mb-4 border-b border-gray-300";
+
+      container.innerHTML = `
+        <div class="flex justify-between items-center">
+          <label class="inline-flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="${id}" class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+            <span class="text-sm text-gray-900">${label}</span>
+          </label>
+          <button class="toggle-btn text-gray-600">▶</button>
+        </div>
+
+        <div class="sub-list pl-6 flex flex-wrap mt-2">
+          ${items.map(item => `
+            <div class="flex items-center space-x-1 w-1/3 mb-2">
+              <label class="inline-flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" id="${item.id}" class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+                <span class="text-sm text-gray-900">${item.label}</span>
+              </label>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      return container;
+    }
+
     // 手動展開子列表
     function expandSublist(mainId, expand = true) {
       const mainCheckbox = document.getElementById(mainId);
@@ -626,52 +584,54 @@
       }
     }
 
-    // 綁定內層列表點擊事件
-    document.getElementById('check_eight' ).addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "八方雲集")});
-    document.getElementById('check_four'  ).addEventListener('change', (event) => {toggle_shop(event, "水餃/鍋貼", "四海遊龍")});
-    document.getElementById('check_mc'    ).addEventListener('change', (event) => {toggle_shop(event, "速食", "麥當勞")});
-    document.getElementById('check_kfc'   ).addEventListener('change', (event) => {toggle_shop(event, "速食", "肯德基")});
-    document.getElementById('check_mos'   ).addEventListener('change', (event) => {toggle_shop(event, "速食", "摩斯漢堡")});
-    document.getElementById('check_dapu'  ).addEventListener('change', (event) => {toggle_shop(event, "鐵板燒（不限連鎖）", "鐵板燒")});
-    document.getElementById('check_px'    ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "全聯福利中心")});
-    document.getElementById('check_home'  ).addEventListener('change', (event) => {toggle_shop(event, "大賣場", "家樂福")});
-    document.getElementById('check_mei'   ).addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "美而美")});
-    document.getElementById('check_hongya').addEventListener('change', (event) => {toggle_shop(event, "連鎖早餐店", "弘爺漢堡")});
-    document.getElementById('check_chang' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "鬍鬚張")});
-    document.getElementById('check_liang' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "梁社漢")});
-    document.getElementById('check_chung' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "正忠排骨飯")});
-    document.getElementById('check_three' ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "三商巧福")});
-    document.getElementById('check_self'  ).addEventListener('change', (event) => {toggle_shop(event, "便當店", "自助餐")});
-    document.getElementById('check_lima'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "麗媽")});
-    document.getElementById('check_8kuo'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "8鍋")});
-    document.getElementById('check_3kuo'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三媽臭臭鍋")});
-    document.getElementById('check_3mao'  ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "三顧茅廬")});
-    document.getElementById('check_six'   ).addEventListener('change', (event) => {toggle_shop(event, "平價火鍋", "六扇門")});
-    document.getElementById('check_sukiya').addEventListener('change', (event) => {toggle_shop(event, "日本連鎖丼飯店", "すき家")});
-    document.getElementById('check_gi'    ).addEventListener('change', (event) => {toggle_shop(event, "日本連鎖丼飯店", "吉野家")});
-    document.getElementById('check_saliya').addEventListener('change', (event) => {toggle_shop(event, "平價義大利麵", "薩莉亞")});
+    // // 讀取暫存資料庫
+    // fetch('shops.sqlite')
+    //   .then(res => res.arrayBuffer())
+    //   .then(buf => {
+    //     const Uints = new Uint8Array(buf);
+    //     db = new SQL.Database(Uints);
+    //     console.log("從伺服器讀取 shops.sqlite 完成");
+    //   });
 
-    // 綁定外層列表點擊事件
-    document.getElementById('check_dumpling').addEventListener('change', (event) => {toggle_category(event, "check_dumpling")});
-    document.getElementById('check_fast'    ).addEventListener('change', (event) => {toggle_category(event, "check_fast")});
-    document.getElementById('check_iron'    ).addEventListener('change', (event) => {toggle_category(event, "check_iron")});
-    document.getElementById('check_market'  ).addEventListener('change', (event) => {toggle_category(event, "check_market")});
-    document.getElementById('check_br'      ).addEventListener('change', (event) => {toggle_category(event, "check_br")});
-    document.getElementById('check_bengdong').addEventListener('change', (event) => {toggle_category(event, "check_bengdong")});
-    document.getElementById('check_hotpod'  ).addEventListener('change', (event) => {toggle_category(event, "check_hotpod")});
-    document.getElementById('check_dong'    ).addEventListener('change', (event) => {toggle_category(event, "check_dong")});
-    document.getElementById('check_italy'   ).addEventListener('change', (event) => {toggle_category(event, "check_italy")});
+    // 讀取JSON設定檔並根據內容渲染面板
+    fetch('setting.json')
+      .then(res => res.json())
+      .then(data => {
+        // 初始化圖層相關變數
+        data["life_function"].forEach(cat => {
+          circles[cat["label"]] = {}
+          markers[cat["label"]] = {}
+          cat["items"].forEach(item => {
+            circles[cat["label"]][item["label"]] = []
+            markers[cat["label"]][item["label"]] = []
+          })
+        })
 
+        // 定位並動態插入生活機能面板
+        const panel = document.querySelector(".w-96"); // 根據 class 定位 panel
+        data["life_function"].forEach(cat => {
+          const block = createCategoryBlock(cat);
+          panel.appendChild(block);
+        });
 
-    // 綁定選單展開隱藏
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const subList = btn.parentElement.nextElementSibling;
-        const isOpen = subList.classList.contains('open');
-        subList.classList.toggle('open', !isOpen);
-        btn.classList.toggle('open', !isOpen);
-      });
-    });
+        // 綁定選單展開隱藏
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const subList = btn.parentElement.nextElementSibling;
+            const isOpen = subList.classList.contains('open');
+            subList.classList.toggle('open', !isOpen);
+            btn.classList.toggle('open', !isOpen);
+          });
+        });
+
+        // 綁定外&內層列表點擊事件
+        data["life_function"].forEach(cat => {
+          document.getElementById(cat["id"]).addEventListener('change', (event) => {toggle_category(event, cat["id"])});
+          cat["items"].forEach(item => {
+            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, ["臺北市"], cat["label"], item["label"], cat["color"])})
+          })
+        });
+      })
   </script>
 </body>
 </html>
