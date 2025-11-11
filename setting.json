@@ -1,4 +1,18 @@
 {
+    "regions": [
+        {
+            "id": "check_tpe",
+            "label": "台北市"
+        },
+        {
+            "id": "check_ty",
+            "label": "桃園市"
+        },
+        {
+            "id": "check_ntpe",
+            "label": "新北市"
+        }
+    ],
     "life_function": [
         {
             "id": "check_dumpling",

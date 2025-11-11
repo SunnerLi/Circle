@@ -89,8 +89,16 @@
   </button>
 
   <!-- 控制面板 -->
-  <div class="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 z-[1000] w-96 font-sans">
-    <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
+  <div class="absolute top-4 right-4 flex items-start space-x-2 z-[1000]">
+    <!-- 地區 Panel -->
+    <div id="region-panel" class="bg-white rounded-xl shadow-lg p-4 font-sans w-48">
+      <h2 class="text-gray-800 text-sm font-semibold mb-2">地區</h2>
+    </div>
+
+    <!-- 機能 Panel -->
+    <div class="bg-white rounded-xl shadow-lg p-4 font-sans w-96">
+      <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
+    </div>
   </div>
 
   <!-- Leaflet JS -->
@@ -317,15 +325,31 @@
       })
     }
 
-    function toggle_shop(event, cities, category, shop, color) {
+    function toggle_shop(event, category, shop, color) {
+      const selectedCities = get_selected_cities();
       if (event.target.checked) {
-        query_server(cities, category, shop, color).then(rows => {
+        query_server(selectedCities, category, shop, color).then(rows => {
           compute(rows)
           draw(category, shop)
         })
       } else {
         erase(category, shop)
       }
+    }
+
+    function get_selected_cities() {
+      const selectedCities = [];
+      const regionCheckboxes = document.querySelectorAll('#region-panel input[type="checkbox"]:checked');
+      regionCheckboxes.forEach(checkbox => {
+        const label = checkbox.closest('label');
+        if (label) {
+          const span = label.querySelector('span');
+          if (span) {
+            selectedCities.push(span.textContent.trim());
+          }
+        }
+      });
+      return selectedCities.length > 0 ? selectedCities : ["台北市"]; // Default to 台北市 if none selected
     }
 
     function toggle_category(event, category_id) {
@@ -343,6 +367,18 @@
     }
 
     // UI渲染函數
+    function createRegionBlock({ id, label }) {
+      const container = document.createElement("div");
+      container.className = "mb-2";
+      container.innerHTML = `
+        <label class="inline-flex items-center space-x-2 cursor-pointer">
+          <input type="checkbox" id="${id}" class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
+          <span class="text-sm text-gray-900">${label}</span>
+        </label>
+      `;
+      return container;
+    }
+
     function createCategoryBlock({ id, label, items }) {
       const container = document.createElement("div");
       container.className = "mb-4 border-b border-gray-300";
@@ -397,11 +433,18 @@
           })
         })
 
+        // 定位並動態插入地區面板
+        const regionPanel = document.getElementById("region-panel");
+        data["regions"].forEach(region => {
+          const block = createRegionBlock(region);
+          regionPanel.appendChild(block);
+        });
+
         // 定位並動態插入生活機能面板
-        const panel = document.querySelector(".w-96"); // 根據 class 定位 panel
+        const lifeFunctionPanel = document.querySelector(".w-96"); // 根據 class 定位 panel
         data["life_function"].forEach(cat => {
           const block = createCategoryBlock(cat);
-          panel.appendChild(block);
+          lifeFunctionPanel.appendChild(block);
         });
 
         // 綁定選單展開隱藏
@@ -418,7 +461,7 @@
         data["life_function"].forEach(cat => {
           document.getElementById(cat["id"]).addEventListener('change', (event) => {toggle_category(event, cat["id"])});
           cat["items"].forEach(item => {
-            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, ["桃園市"], cat["label"], item["label"], cat["color"])})
+            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, cat["label"], item["label"], cat["color"])})
           })
         });
       })
