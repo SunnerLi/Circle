@@ -84,9 +84,9 @@
 <body>
   <div id="map"></div>
 
-  <button onclick="export_db()" class="absolute bottom-2 right-2 mt-4 px-4 py-2 bg-blue-500 text-white z-[1000] rounded-lg">
+  <!-- <button onclick="export_db()" class="absolute bottom-2 right-2 mt-4 px-4 py-2 bg-blue-500 text-white z-[1000] rounded-lg">
     下載 SQLite 資料庫
-  </button>
+  </button> -->
 
   <!-- 控制面板 -->
   <div class="absolute top-4 right-4 flex items-start space-x-2 z-[1000]">
@@ -225,6 +225,9 @@
               const json = await res.json();
               console.log(`第${i}次. #${shop}: ` + json.elements.length)
               if (json.elements.length > 0) {
+                // (3) 當點擊餐廳panel的選項後，會發送API與openstreet伺服器互動，當收到response後，除了原先畫圖的功能以外，可以將更新的內容寫到緩存中
+                const cacheKey = `${cities.join('_')}-${category}-${shop}`;
+                updateCache(cacheKey, json);
                 update_db(json, city, category, shop, color);
                 allResults.push(...json.elements);
                 break
@@ -325,16 +328,84 @@
       })
     }
 
+    // --- Caching functions ---
+    const CACHE_KEY_PREFIX = 'mapCache';
+
+    function getCache(key) {
+      const cached = localStorage.getItem(`${CACHE_KEY_PREFIX}_${key}`);
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          // 確保返回的格式與 Overpass API 一致
+          return data.elements ? data : { elements: data };
+        } catch (e) {
+          console.error("Failed to parse cache:", e);
+          return null;
+        }
+      }
+      return null;
+    }
+
+    function updateCache(key, data) {
+        // 確保傳入的 data 有 elements 屬性
+        const dataToCache = data.elements ? data : { elements: data };
+
+        // (5) 請注意在更新緩存內容時，是更新內容不是覆蓋內容，如果緩存內部有10間鐵板燒餐廳的資訊，但當下與伺服器互動取到的response是0筆，則代表當下response有誤，不是直接覆蓋變成0筆
+        if (!dataToCache || !dataToCache.elements || dataToCache.elements.length === 0) {
+            const existingData = getCache(key);
+            if (existingData && existingData.elements && existingData.elements.length > 0) {
+                console.log(`Cache: Received 0 elements for ${key}. Preserving existing cache.`);
+                return; // 不更新快取
+            }
+        }
+
+        // (4) 請注意同一時間可能會有多個checkbox被點擊，並且有多個request與openstreet伺服器互動，每次response都會寫入緩存，因此要考慮是否有conflict並避免它
+        // 解法：每個 request 都只寫自己的 key，不會互相影響
+        try {
+            localStorage.setItem(`${CACHE_KEY_PREFIX}_${key}`, JSON.stringify(dataToCache));
+            console.log(`Cache: Updated cache for ${key}`);
+        } catch (e) {
+            console.error("Failed to update cache:", e);
+            // 可選：增加更複雜的錯誤處理，例如清除部分舊快取
+        }
+    }
+
     /**
      * 處理點擊/取消點擊商店checkbox的行為
      */
     function toggle_shop(event, category, shop, color) {
       const selectedCities = get_selected_cities();
+      const cacheKey = `${selectedCities.join('_')}-${category}-${shop}`;
+
       if (event.target.checked) {
-        query_server(selectedCities, category, shop, color).then(rows => {
-          compute(rows)
-          draw(category, shop)
-        })
+        // (1) 當切換地區panel時，會讀取緩存內是否有暫存資料，如果有的話則讀入緩存資料
+        const cachedData = getCache(cacheKey);
+
+        if (cachedData && cachedData.elements.length > 0) {
+          console.log(`Cache HIT for key: ${cacheKey}. Rendering from cache.`);
+          // (2) 讀入緩存資料後，會根據資料內容渲染畫面
+          // 將 Overpass API 格式轉換為 query_db 的格式
+          const rows = cachedData.elements.map(el => {
+            let lat = el.lat || (el.center && el.center.lat);
+            let lon = el.lon || (el.center && el.center.lon);
+            return {
+              city: selectedCities[0], // 注意：這裡簡化為第一個城市
+              category: category,
+              shop: shop,
+              latitude: lat,
+              longitude: lon,
+              color: color
+            };
+          });
+          compute(rows);
+          draw(category, shop);
+        } else {
+          console.log(`Cache MISS for key: ${cacheKey}. Querying server.`);
+          query_server(selectedCities, category, shop, color).then(rows => {
+            compute(rows)
+            draw(category, shop)
+          })
+        }
       } else {
         erase(category, shop)
       }

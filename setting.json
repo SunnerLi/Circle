@@ -2,21 +2,24 @@
     "regions": [
         {
             "id": "check_tpe",
-            "label": "台北市",
+            "label": "臺北市",
             "lat": 25.0330,
-            "lng": 121.5654
+            "lng": 121.5654,
+            "db_name": "taipei.sqlite"
         },
         {
             "id": "check_ntpe",
             "label": "新北市",
             "lat": 25.0142,
-            "lng": 121.4649
+            "lng": 121.4649,
+            "db_name": "new_taipei.sqlite"
         },
         {
             "id": "check_ty",
             "label": "桃園市",
             "lat": 24.9539,
-            "lng": 121.2255
+            "lng": 121.2255,
+            "db_name": "taoyuan.sqlite"
         }
     ],
     "life_function": [
