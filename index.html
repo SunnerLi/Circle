@@ -201,7 +201,6 @@
           );
           out center;
         `;
-        // console.log(overpassQuery)
 
         for (let i = 0; i < 5; i++) {
           // 定義OpenStreetMap的API URL
@@ -237,11 +236,6 @@
 
     // 更新本地資料庫
     function update_db(res, city, category, shop, color) {
-      console.log(res)
-      console.log(city)
-      console.log(category)
-      console.log(shop)
-      console.log(color)
       try {
         const insertSQL = `
           INSERT INTO shops (city, category, shop, latitude, longitude, color)
@@ -278,156 +272,6 @@
       URL.revokeObjectURL(url);
     }
 
-    // // 創建data dict，用來收集資料：data = {'eight': {meta: [], marker: [], circle: []}, ...}
-    // // ref: https://github.com/pointhi/leaflet-color-markers/tree/master/img
-    // let data = {
-    //   '水餃/鍋貼': {
-    //     '八方雲集': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
-    //     '四海遊龍': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFF75C'},
-    //   },
-    //   '速食': {
-    //     '麥當勞': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
-    //     '肯德基': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
-    //     '摩斯漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#FFB937'},
-    //   },
-    //   '鐵板燒（不限連鎖）': {
-    //     '鐵板燒': {'meta': null, 'marker': [], 'circle': [], 'color': '#50796C'},
-    //   },
-    //   '大賣場': {
-    //     '全聯福利中心': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
-    //     '家樂福': {'meta': null, 'marker': [], 'circle': [], 'color': '#004FF0'},
-    //   },
-    //   '連鎖早餐店': {
-    //     '美而美': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
-    //     '弘爺漢堡': {'meta': null, 'marker': [], 'circle': [], 'color': '#DD6476'},
-    //   },
-    //   '便當店': {
-    //     '鬍鬚張': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-    //     '梁社漢': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-    //     '正忠排骨飯': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-    //     '三商巧福': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-    //     '自助餐': {'meta': null, 'marker': [], 'circle': [], 'color': '#FF2C14'},
-    //   },
-    //   '平價火鍋': {
-    //     '麗媽': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-    //     '8鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-    //     '三媽臭臭鍋': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-    //     '三顧茅廬': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-    //     '六扇門': {'meta': null, 'marker': [], 'circle': [], 'color': '#FD0531'},
-    //   },
-    //   '日本連鎖丼飯店': {
-    //     'すき家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
-    //     '吉野家': {'meta': null, 'marker': [], 'circle': [], 'color': '#ED7D23'},
-    //   },
-    //   '平價義大利麵': {
-    //     '薩莉亞': {'meta': null, 'marker': [], 'circle': [], 'color': '#2EA55E'},
-    //   },
-    // }
-
-    // // 回傳 300~1000ms 之間的隨機數
-    // function getRandomInteger(min = 1000, max = 10000) {
-    //   return Math.floor(Math.random() * (max - min + 1)) + min;
-    // }
-
-    // async function search(category_name, shop_name) {
-    //   // 如果尚未有搜尋資料，則先搜一次
-    //   if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
-    //     // 使用 Overpass API 搜尋八方雲集
-    //     // const query = `
-    //     //     [out:json][timeout:25];
-    //     //     area["name"="臺北市"]->.searchArea;
-    //     //     (
-    //     //         node["name"~"${shop_name}"](area.searchArea);
-    //     //         way["name"~"${shop_name}"](area.searchArea);
-    //     //         relation["name"~"${shop_name}"](area.searchArea);
-    //     //     );
-    //     //     out center;
-    //     // `;
-    //     const query = `
-    //         [out:json][timeout:25];
-
-    //         // 定義兩個 area
-    //         area["name"="臺北市"]->.taipei;
-    //         area["name"="新北市"]->.newtaipei;
-
-    //         // 將兩個 area 合併
-    //         (
-    //           node["name"~"${shop_name}"](area.taipei);
-    //           way["name"~"${shop_name}"](area.taipei);
-    //           relation["name"~"${shop_name}"](area.taipei);
-              
-    //           node["name"~"${shop_name}"](area.newtaipei);
-    //           way["name"~"${shop_name}"](area.newtaipei);
-    //           relation["name"~"${shop_name}"](area.newtaipei);
-    //         );
-    //         out center;
-    //     `
-
-    //     // 定義4個OpenStreetMap的API URL
-    //     let urls = [
-    //       'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query),
-    //       'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(query),
-    //       'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(query),
-    //     ]
-
-    //     // 透過fetch獲取資訊，失敗則睡覺一陣子後換伺服器，最多嘗試30次
-    //     for (let i = 0; i < 30; i++) {
-    //       let url = urls[getRandomInteger(0, 2)]
-    //       try {
-    //         let res = await fetch(url)
-    //         if (res.ok) {
-    //           data[category_name][shop_name]["meta"] = await res.json()
-    //           if (data[category_name][shop_name]["meta"].elements.length > 0) {
-    //             break
-    //           }
-    //         } else {
-    //           await sleep(getRandomInteger(1000, 30000))
-    //         }
-    //       } catch (err) {
-    //         console.warn(`Failed to fetch from ${url}`, err);
-    //       }
-    //     }
-    //   }
-    // }
-
-    // function compute(category_name, shop_name) {
-    //   if (data[category_name][shop_name]["meta"].elements.length > 0) {
-    //     data[category_name][shop_name]["circle"] = []
-    //     data[category_name][shop_name]["marker"] = []
-
-    //     data[category_name][shop_name]["meta"].elements.forEach(el => {
-    //       const lat = el.lat || el.center?.lat;
-    //       const lon = el.lon || el.center?.lon;
-
-    //       if (!lat || !lon) return;
-
-    //       const name = el.tags?.name || shop_name;
-
-    //       // 建立icon
-    //       const icon = L.icon({
-    //         iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/${data[category_name][shop_name]["color"]}.png`,
-    //         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    //         iconSize:     [25, 41],
-    //         iconAnchor:   [12, 41],
-    //         popupAnchor:  [1, -34],
-    //         shadowSize:   [41, 41]
-    //       });
-
-    //       // 加入 marker
-    //       data[category_name][shop_name]["marker"] = data[category_name][shop_name]["marker"].concat(L.marker([lat, lon], {icon: createDivIcon(shop_name, data[category_name][shop_name]["color"])}))
-
-    //       // 畫出 500 公尺的圓
-    //       data[category_name][shop_name]["circle"] = data[category_name][shop_name]["circle"].concat(
-    //         L.circle([lat, lon], {
-    //           radius: 200,
-    //           color: data[category_name][shop_name]["color"],
-    //           fillOpacity: 0.1
-    //         })
-    //       )
-    //     });
-    //   }
-    // }
-
     function compute(rows) {
       rows.forEach(row => {
         markers[row.category][row.shop] = markers[row.category][row.shop].concat(
@@ -455,32 +299,6 @@
       });
     }
 
-    // function draw(category_name, shop_name) {
-    //   if (data[category_name][shop_name]["circle"].length > 0) {
-    //     data[category_name][shop_name]["circle"].forEach(circle => {
-    //       circle.addTo(map)
-    //     })
-    //   }
-    //   if (data[category_name][shop_name]["marker"].length > 0) {
-    //     data[category_name][shop_name]["marker"].forEach(marker => {
-    //       marker.addTo(map).bindPopup(shop_name)
-    //     })
-    //   }
-    // }
-
-    // function erase(category_name, shop_name) {
-    //   if (data[category_name][shop_name]["circle"].length > 0) {
-    //     data[category_name][shop_name]["circle"].forEach(circle => {
-    //       map.removeLayer(circle)
-    //     })
-    //   }
-    //   if (data[category_name][shop_name]["marker"].length > 0) {
-    //     data[category_name][shop_name]["marker"].forEach(marker => {
-    //       map.removeLayer(marker)
-    //     })
-    //   }
-    // }
-
     function draw(category, shop) {
       circles[category][shop].forEach(circle => {
         circle.addTo(map)
@@ -498,25 +316,6 @@
         map.removeLayer(marker)
       })
     }
-
-    // function toggle_shop(event, category_name, shop_name) {
-    //   if (event.target.checked) {
-    //     // 如果尚未有搜尋資料，則先搜一次
-    //     if (!data[category_name][shop_name]["meta"] || data[category_name][shop_name]["meta"].elements.length == 0) {
-    //       search(category_name, shop_name).then(() => {
-    //         compute(category_name, shop_name)
-    //         draw(category_name, shop_name)
-    //       })
-    //     } else {
-    //       compute(category_name, shop_name)
-    //       draw(category_name, shop_name)
-    //     }
-    //   } else {
-    //     if (data[category_name][shop_name]["circle"]) {
-    //       erase(category_name, shop_name)
-    //     }
-    //   }
-    // }
 
     function toggle_shop(event, cities, category, shop, color) {
       if (event.target.checked) {
@@ -584,15 +383,6 @@
       }
     }
 
-    // // 讀取暫存資料庫
-    // fetch('shops.sqlite')
-    //   .then(res => res.arrayBuffer())
-    //   .then(buf => {
-    //     const Uints = new Uint8Array(buf);
-    //     db = new SQL.Database(Uints);
-    //     console.log("從伺服器讀取 shops.sqlite 完成");
-    //   });
-
     // 讀取JSON設定檔並根據內容渲染面板
     fetch('setting.json')
       .then(res => res.json())
@@ -628,7 +418,7 @@
         data["life_function"].forEach(cat => {
           document.getElementById(cat["id"]).addEventListener('change', (event) => {toggle_category(event, cat["id"])});
           cat["items"].forEach(item => {
-            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, ["臺北市"], cat["label"], item["label"], cat["color"])})
+            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, ["桃園市"], cat["label"], item["label"], cat["color"])})
           })
         });
       })

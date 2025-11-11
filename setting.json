@@ -1,0 +1,90 @@
+{
+    "life_function": [
+        {
+            "id": "check_dumpling",
+            "label": "水餃/鍋貼",
+            "color": "#FFF75C",
+            "items": [
+            { "id": "check_eight", "label": "八方雲集" },
+            { "id": "check_four", "label": "四海遊龍" }
+            ]
+        },
+        {
+            "id": "check_fast",
+            "label": "速食",
+            "color": "#FFB937",
+            "items": [
+                {"id": "check_mc", "label": "麥當勞"},
+                {"id": "check_kfc", "label": "肯德基"},
+                {"id": "check_mos", "label": "摩斯漢堡"}
+            ]
+        },
+        {
+            "id": "check_iron",
+            "label": "鐵板燒（不限連鎖）",
+            "color": "#50796C",
+            "items": [
+                {"id": "check_dapu", "label": "鐵板燒"}
+            ]
+        },
+        {
+            "id": "check_market",
+            "label": "大賣場",
+            "color": "#004FF0",
+            "items": [
+                {"id": "check_px", "label": "全聯福利中心"},
+                {"id": "check_home", "label": "家樂福"}
+            ]
+        },
+        {
+            "id": "check_br",
+            "label": "連鎖早餐店",
+            "color": "#DD6476",
+            "items": [
+                {"id": "check_mei", "label": "美而美"},
+                {"id": "check_hongya", "label": "弘爺漢堡"}
+            ]
+        },
+        {
+            "id": "check_bengdong",
+            "label": "便當店",
+            "color": "#FF2C14",
+            "items": [
+                {"id": "check_chang", "label": "鬍鬚張"},
+                {"id": "check_liang", "label": "梁社漢"},
+                {"id": "check_chung", "label": "正忠排骨飯"},
+                {"id": "check_three", "label": "三商巧福"},
+                {"id": "check_self", "label": "自助餐"}
+            ]
+        },
+        {
+            "id": "check_hotpod",
+            "label": "平價火鍋",
+            "color": "#FD0531",
+            "items": [
+                {"id": "check_lima", "label": "麗媽"},
+                {"id": "check_8kuo", "label": "8鍋"},
+                {"id": "check_3kuo", "label": "三媽臭臭鍋"},
+                {"id": "check_3mao", "label": "三顧茅廬"},
+                {"id": "check_six", "label": "六扇門"}
+            ]
+        },
+        {
+            "id": "check_dong",
+            "label": "日本連鎖丼飯店",
+            "color": "#ED7D23",
+            "items": [
+                {"id": "check_sukiya", "label": "すき家"},
+                {"id": "check_gi", "label": "吉野家"}
+            ]
+        },
+        {
+            "id": "check_italy",
+            "label": "平價義大利麵",
+            "color": "#2EA55E",
+            "items": [
+                {"id": "check_saliya", "label": "薩莉亞"}
+            ]
+        }
+    ]
+}
