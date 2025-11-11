@@ -76,6 +76,16 @@
     .toggle-btn {
       transition: transform 0.3s ease;
     }
+
+    .panel-content {
+      max-height: 1000px; /* Adjust as needed, large enough for content */
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+    }
+
+    .panel-content.collapsed {
+      max-height: 0;
+    }
   </style>
 </head>
 <body>
@@ -85,12 +95,14 @@
   <div class="absolute top-4 right-4 flex items-start space-x-2 z-[1000]">
     <!-- 地區 Panel -->
     <div id="region-panel" class="bg-white rounded-xl shadow-lg p-4 font-sans w-48">
-      <h2 class="text-gray-800 text-sm font-semibold mb-2">地區</h2>
+      <h2 id="region-panel-header" class="text-gray-800 text-sm font-semibold mb-2 cursor-pointer">地區</h2>
+      <div id="region-panel-content" class="panel-content"></div>
     </div>
 
     <!-- 機能 Panel -->
-    <div class="bg-white rounded-xl shadow-lg p-4 font-sans w-96">
-      <h2 class="text-gray-800 text-sm font-semibold mb-2">機能選項</h2>
+    <div id="life-function-panel" class="bg-white rounded-xl shadow-lg p-4 font-sans w-96">
+      <h2 id="life-function-panel-header" class="text-gray-800 text-sm font-semibold mb-2 cursor-pointer">機能選項</h2>
+      <div id="life-function-panel-content" class="panel-content"></div>
     </div>
   </div>
 
@@ -419,10 +431,10 @@
         })
 
         // 定位並動態插入地區面板
-        const regionPanel = document.getElementById("region-panel");
+        const regionPanelContent = document.getElementById("region-panel-content");
         data["regions"].forEach(region => {
           const block = createRegionBlock(region);
-          regionPanel.appendChild(block);
+          regionPanelContent.appendChild(block);
         });
 
         // 綁定地區選擇事件
@@ -442,10 +454,10 @@
         }
 
         // 定位並動態插入生活機能面板
-        const lifeFunctionPanel = document.querySelector(".w-96"); // 根據 class 定位 panel
+        const lifeFunctionPanelContent = document.getElementById("life-function-panel-content");
         data["life_function"].forEach(cat => {
           const block = createCategoryBlock(cat);
-          lifeFunctionPanel.appendChild(block);
+          lifeFunctionPanelContent.appendChild(block);
         });
 
         // 綁定選單展開隱藏
@@ -464,6 +476,15 @@
           cat["items"].forEach(item => {
             document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, cat["label"], item["label"], cat["color"])})
           })
+        });
+
+        // 綁定 Panel 收合事件
+        document.getElementById('region-panel-header').addEventListener('click', () => {
+            document.getElementById('region-panel-content').classList.toggle('collapsed');
+        });
+
+        document.getElementById('life-function-panel-header').addEventListener('click', () => {
+            document.getElementById('life-function-panel-content').classList.toggle('collapsed');
         });
       })
   </script>
