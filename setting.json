@@ -17,9 +17,16 @@
         {
             "id": "check_ty",
             "label": "桃園市",
-            "lat": 24.9539,
-            "lng": 121.2255,
+            "lat": 24.9569,
+            "lng": 121.2236,
             "db_name": "taoyuan.sqlite"
+        },
+        {
+            "id": "check_tc",
+            "label": "臺中市",
+            "lat": 24.1439,
+            "lng": 120.6794,
+            "db_name": "taichung.sqlite"
         }
     ],
     "life_function": [
