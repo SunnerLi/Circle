@@ -12,9 +12,6 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- sql.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
-
   <style>
     /* 地圖 */
     #map { height: 100vh; width: 100%; }
@@ -84,10 +81,6 @@
 <body>
   <div id="map"></div>
 
-  <!-- <button onclick="export_db()" class="absolute bottom-2 right-2 mt-4 px-4 py-2 bg-blue-500 text-white z-[1000] rounded-lg">
-    下載 SQLite 資料庫
-  </button> -->
-
   <!-- 控制面板 -->
   <div class="absolute top-4 right-4 flex items-start space-x-2 z-[1000]">
     <!-- 地區 Panel -->
@@ -105,11 +98,6 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    // 建立資料庫物件
-    let db = null;
-    let SQL = null;
-
-    // 建立地圖
     const map = L.map('map').setView([25.0330, 121.5654], 13); // 台北市中心
 
     // 宣告圖層相關物件
@@ -121,82 +109,13 @@
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // 初始化 sql.js 與資料庫
-    initSqlJs({ 
-      locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
-    }).then(_SQL => {
-      SQL = _SQL;
-      load_db("shops.sqlite");
-    });
-
     // 暫停函式
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // 載入本地資料庫
-    async function load_db(filename) {
-      try {
-        const res = await fetch(filename);
-        if (!res.ok) {
-          console.warn(`${filename} 不存在，創建新資料庫`);
-          db = new SQL.Database();
-          create_db();
-          return;
-        }
-
-        const buf = await res.arrayBuffer();
-        const u8 = new Uint8Array(buf);
-        db = new SQL.Database(u8);
-        console.log(`${filename} 載入成功`);
-      } catch (err) {
-        console.error("載入資料庫發生錯誤:", err);
-        db = new SQL.Database();
-        create_db();
-      }
-    }
-
-    // 創建表格函式
-    function create_db() {
-      const createTableSQL = `
-        CREATE TABLE IF NOT EXISTS shops (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          city TEXT,
-          category TEXT,
-          shop TEXT,
-          latitude REAL,
-          longitude REAL,
-          color TEXT
-        );
-      `;
-      db.run(createTableSQL);
-    }
-
-    // 查詢本地資料庫
-    function query_db(cities, category, shop) {
-      create_db();
-      const placeholders = cities.map(() => '?').join(',');
-      const stmt = db.prepare(`
-        SELECT * FROM shops
-        WHERE city IN (${placeholders}) AND category = ? AND shop = ?;
-      `);
-      const result = [];
-      stmt.bind([...cities, category, shop]);
-      while (stmt.step()) {
-        result.push(stmt.getAsObject());
-      }
-      stmt.free();
-      return result;
-    }
-
     // 查詢Open Street伺服器
     async function query_server(cities, category, shop, color) {
-      const data = query_db(cities, category, shop);
-      if (data.length > 0) {
-        console.log("DB has data:", data);
-        return data;
-      }
-
       let allResults = [];
       for (const city of cities) {
         const overpassQuery = `
@@ -228,7 +147,6 @@
                 // (3) 當點擊餐廳panel的選項後，會發送API與openstreet伺服器互動，當收到response後，除了原先畫圖的功能以外，可以將更新的內容寫到緩存中
                 const cacheKey = `${cities.join('_')}-${category}-${shop}`;
                 updateCache(cacheKey, json);
-                update_db(json, city, category, shop, color);
                 allResults.push(...json.elements);
                 break
               }
@@ -242,45 +160,19 @@
         }
       }
 
-      return query_db(cities, category, shop);
-    }
-
-    // 更新本地資料庫
-    function update_db(res, city, category, shop, color) {
-      try {
-        const insertSQL = `
-          INSERT INTO shops (city, category, shop, latitude, longitude, color)
-          VALUES (?, ?, ?, ?, ?, ?);
-        `;
-        const stmt = db.prepare(insertSQL);
-
-        for (const el of res.elements) {
-          console.log(el)
-          let lat = el.lat || (el.center && el.center.lat);
-          let lon = el.lon || (el.center && el.center.lon);
-          if (lat !== undefined && lon !== undefined) {
-            stmt.run([city, category, shop, lat, lon, color]);
-          }
-        }
-
-        stmt.free();
-      } catch (e) {
-        console.error("[錯誤]", e)
-      }
-    }
-
-    function export_db() {
-      const binaryArray = db.export(); // 匯出為 Uint8Array
-      const blob = new Blob([binaryArray], { type: "application/octet-stream" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "shops.sqlite"; // 你要下載的檔名
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // 將 Overpass API 格式轉換為 compute 函數期望的格式
+      return allResults.map(el => {
+        let lat = el.lat || (el.center && el.center.lat);
+        let lon = el.lon || (el.center && el.center.lon);
+        return {
+          city: cities[0], // 注意：這裡簡化為第一個城市
+          category: category,
+          shop: shop,
+          latitude: lat,
+          longitude: lon,
+          color: color
+        };
+      });
     }
 
     function compute(rows) {
