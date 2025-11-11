@@ -2,15 +2,21 @@
     "regions": [
         {
             "id": "check_tpe",
-            "label": "台北市"
-        },
-        {
-            "id": "check_ty",
-            "label": "桃園市"
+            "label": "台北市",
+            "lat": 25.0330,
+            "lng": 121.5654
         },
         {
             "id": "check_ntpe",
-            "label": "新北市"
+            "label": "新北市",
+            "lat": 25.0142,
+            "lng": 121.4649
+        },
+        {
+            "id": "check_ty",
+            "label": "桃園市",
+            "lat": 24.9539,
+            "lng": 121.2255
         }
     ],
     "life_function": [

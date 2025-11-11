@@ -325,6 +325,9 @@
       })
     }
 
+    /**
+     * 處理點擊/取消點擊商店checkbox的行為
+     */
     function toggle_shop(event, category, shop, color) {
       const selectedCities = get_selected_cities();
       if (event.target.checked) {
@@ -352,6 +355,9 @@
       return selectedCities.length > 0 ? selectedCities : ["台北市"]; // Default to 台北市 if none selected
     }
 
+    /**
+     * 處理點擊/取消點擊餐廳類別checkbox的行為
+     */
     function toggle_category(event, category_id) {
       const mainCheckbox = document.getElementById(category_id)
       const itemDiv = mainCheckbox.closest('.mb-4')
@@ -363,6 +369,23 @@
         subCheckboxes.forEach(cb => {if (!cb.checked) {cb.click()}});
       } else {
         subCheckboxes.forEach(cb => {if (cb.checked) {cb.click()}});
+      }
+    }
+
+    /**
+     * 處理點擊地區checkbox的行為
+     */
+    function handle_region_change(regionId, regions) {
+      const regionCheckboxes = document.querySelectorAll('#region-panel input[type="checkbox"]');
+      regionCheckboxes.forEach(checkbox => {
+        if (checkbox.id !== regionId) {
+          checkbox.checked = false;
+        }
+      });
+
+      const selectedRegion = regions.find(r => r.id === regionId);
+      if (selectedRegion) {
+        map.setView([selectedRegion.lat, selectedRegion.lng], 13);
       }
     }
 
@@ -382,7 +405,6 @@
     function createCategoryBlock({ id, label, items }) {
       const container = document.createElement("div");
       container.className = "mb-4 border-b border-gray-300";
-
       container.innerHTML = `
         <div class="flex justify-between items-center">
           <label class="inline-flex items-center space-x-2 cursor-pointer">
@@ -439,6 +461,22 @@
           const block = createRegionBlock(region);
           regionPanel.appendChild(block);
         });
+
+        // 綁定地區選擇事件
+        data["regions"].forEach(region => {
+          const checkbox = document.getElementById(region.id);
+          checkbox.addEventListener('change', (event) => {
+            if (event.target.checked) {
+              handle_region_change(region.id, data.regions);
+            }
+          });
+        });
+
+        // 設定預設選取台北市
+        const tpeCheckbox = document.getElementById('check_tpe');
+        if (tpeCheckbox) {
+          tpeCheckbox.checked = true;
+        }
 
         // 定位並動態插入生活機能面板
         const lifeFunctionPanel = document.querySelector(".w-96"); // 根據 class 定位 panel
