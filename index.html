@@ -110,40 +110,20 @@
       }
     }
 
-    #loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(200, 200, 200, 0.5); /* 淺灰 */
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    /* 每個機能項目 checkbox 左方的小型載入指示器 */
+    .mini-spinner {
+      flex: 0 0 14px;   /* 固定寬度，即使沒在載入也保留空間，避免版面跳動 */
+      width: 14px;
+      height: 14px;
+      box-sizing: border-box;
+      display: inline-block;
     }
 
-    #loading-overlay.hidden {
-      display: none;
-    }
-
-    .loading-box {
-      background-color: white;
-      padding: 20px 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-    }
-
-    .spinner {
-      border: 4px solid #f3f3f3; /* Light grey */
-      border-top: 4px solid #3498db; /* Blue */
+    .mini-spinner.loading {
+      border: 2px solid #e5e7eb;      /* 淺灰 */
+      border-top: 2px solid #3498db;  /* 藍 */
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin-right: 20px;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
@@ -153,13 +133,6 @@
   </style>
 </head>
 <body>
-  <div id="loading-overlay" class="hidden">
-    <div class="loading-box">
-      <div class="spinner"></div>
-      <span class="loading-text">載入中...</span>
-    </div>
-  </div>
-
   <div id="map"></div>
 
   <!-- 控制面板 -->
@@ -183,30 +156,16 @@
   <script>
     const map = L.map('map').setView([25.0330, 121.5654], 13); // 台北市中心
 
-    // 載入中功能
-    let active_requests = 0;
-    const loading_overlay = document.getElementById('loading-overlay');
-
-    function show_loading() {
-      loading_overlay.classList.remove('hidden');
+    // 載入中功能：每個機能項目各自顯示載入指示器，不阻擋使用者操作，
+    // 因此可以同時點選多個 checkbox。
+    function show_item_spinner(itemId) {
+      const slot = document.getElementById(`spinner-${itemId}`);
+      if (slot) slot.classList.add('loading');
     }
 
-    function hide_loading() {
-      loading_overlay.classList.add('hidden');
-    }
-
-    function increment_requests() {
-      active_requests++;
-      if (active_requests === 1) {
-        show_loading();
-      }
-    }
-
-    function decrement_requests() {
-      active_requests--;
-      if (active_requests === 0) {
-        hide_loading();
-      }
+    function hide_item_spinner(itemId) {
+      const slot = document.getElementById(`spinner-${itemId}`);
+      if (slot) slot.classList.remove('loading');
     }
 
     // 宣告圖層相關物件
@@ -223,48 +182,71 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    // Overpass 端點清單：依序輪替，一台掛掉自動換下一台。
+    // 排序依實測可靠度：mail.ru 目前資料完整且 CORS 正常，排最前面；
+    // 其餘三個目前個別有連線失敗/資料不全/逾時等問題，但仍保留作為備援，
+    // 因為這類公用服務狀態會隨時間變化，機器不穩定可能只是暫時的。
+    const OVERPASS_ENDPOINTS = [
+      'https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=',
+      'https://overpass-api.de/api/interpreter?data=',
+      'https://overpass.osm.ch/api/interpreter?data=',
+      'https://overpass.kumi.systems/api/interpreter?data=',
+    ];
+
+    // 指數退避 + 隨機抖動：1s → 2s → 4s → 8s（上限），避免失敗時狂打被限流。
+    function backoff_delay(attempt) {
+      const base = Math.min(1000 * Math.pow(2, attempt), 8000);
+      const jitter = Math.floor(Math.random() * 1000);
+      return base + jitter;
+    }
+
     // 查詢Open Street伺服器
-    async function query_server(cities, category, shop, color) {
+    // searchPattern：實際拿去比對 OSM name 的正則字串（可能包含新舊品牌名稱，用 | 分隔）。
+    // shop：項目的顯示名稱／身分識別鍵（用於 markers/circles/cache），兩者不一定相同。
+    async function query_server(cities, category, shop, color, searchPattern) {
       let allResults = [];
       for (const city of cities) {
         const overpassQuery = `
           [out:json][timeout:25];
           area["name"="${city}"]->.searchArea;
           (
-            node["name"~"${shop}"](area.searchArea);
-            way["name"~"${shop}"](area.searchArea);
-            relation["name"~"${shop}"](area.searchArea);
+            node["name"~"${searchPattern}"](area.searchArea);
+            way["name"~"${searchPattern}"](area.searchArea);
+            relation["name"~"${searchPattern}"](area.searchArea);
           );
           out center;
         `;
 
-        for (let i = 0; i < 5; i++) {
-          // 定義OpenStreetMap的API URL
-          const url = [
-            'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(overpassQuery),
-            'https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(overpassQuery),
-            'https://overpass.osm.ch/api/interpreter?data=' + encodeURIComponent(overpassQuery),
-          ][Math.floor(Math.random() * (2 - 0 + 1)) + 0]
+        // 每台端點大約試兩輪
+        const MAX_ATTEMPTS = OVERPASS_ENDPOINTS.length * 2;
+        for (let i = 0; i < MAX_ATTEMPTS; i++) {
+          const endpoint = OVERPASS_ENDPOINTS[i % OVERPASS_ENDPOINTS.length];
+          const url = endpoint + encodeURIComponent(overpassQuery);
 
           try {
-            console.log(url)
             const res = await fetch(url);
             if (res.ok) {
               const json = await res.json();
-              console.log(`第${i}次. #${shop}: ` + json.elements.length)
+              console.log(`第${i}次 ${endpoint} #${shop}: ${json.elements.length} 筆`);
               if (json.elements.length > 0) {
-                // (3) 當點擊餐廳panel的選項後，會發送API與openstreet伺服器互動，當收到response後，除了原先畫圖的功能以外，可以將更新的內容寫到緩存中
+                // (3) 收到有效 response 後，除了畫圖，也把內容寫進緩存
                 const cacheKey = `${cities.join('_')}-${category}-${shop}`;
                 updateCache(cacheKey, json);
                 allResults.push(...json.elements);
-                break
+                break;
               }
+              // 回 0 筆：可能真的沒有，也可能是這台暫時異常。換下一台再確認，
+              // 只做短暫延遲、不做長退避，避免拖慢「其實真的沒資料」的情況。
+              await sleep(500);
             } else {
-              console.log(`第${i}次不ok.`)
-              await sleep(Math.floor(Math.random() * (30000 - 1000 + 1)) + 1000)
+              // 非 2xx（429 限流 / 500 等）：退避後換下一台
+              console.warn(`第${i}次 ${endpoint} 回應 ${res.status}，退避重試`);
+              await sleep(backoff_delay(i));
             }
           } catch (e) {
-            console.error("Failed Overpass API for city:", city, e);
+            // 連線被拒 / CORS 被擋：同樣退避後換下一台
+            console.error(`第${i}次 ${endpoint} 連線失敗（連線被拒或 CORS）:`, e.message);
+            await sleep(backoff_delay(i));
           }
         }
       }
@@ -374,12 +356,14 @@
     /**
      * 處理點擊/取消點擊商店checkbox的行為
      */
-    function toggle_shop(event, category, shop, color) {
+    function toggle_shop(event, category, shop, color, searchPattern) {
+      const itemId = event.target.id;
+      searchPattern = searchPattern || shop; // 沒有另外指定 query 時，用顯示名稱本身當比對條件
       const selectedCities = get_selected_cities();
       const cacheKey = `${selectedCities.join('_')}-${category}-${shop}`;
 
       if (event.target.checked) {
-        increment_requests(); // Increment for both cache and server paths
+        show_item_spinner(itemId); // 只顯示這個項目的載入圈圈，不阻擋其他操作
         try {
           const cachedData = getCache(cacheKey);
 
@@ -399,19 +383,19 @@
             });
             compute(rows);
             draw(category, shop);
-            decrement_requests(); // Decrement after sync operation
+            hide_item_spinner(itemId); // 同步操作完成後隱藏
           } else {
             console.log(`Cache MISS for key: ${cacheKey}. Querying server.`);
-            query_server(selectedCities, category, shop, color).then(rows => {
+            query_server(selectedCities, category, shop, color, searchPattern).then(rows => {
               compute(rows);
               draw(category, shop);
             }).finally(() => {
-              decrement_requests(); // Decrement after async operation
+              hide_item_spinner(itemId); // 非同步操作完成後隱藏
             });
           }
         } catch (e) {
           console.error("Error in toggle_shop:", e);
-          decrement_requests(); // Ensure decrement even if there's a sync error
+          hide_item_spinner(itemId); // 即使發生同步錯誤也要隱藏
         }
       } else {
         erase(category, shop);
@@ -495,6 +479,7 @@
         <div class="sub-list pl-6 flex flex-wrap mt-2">
           ${items.map(item => `
             <div class="flex items-center space-x-1 w-1/3 mb-2">
+              <span class="mini-spinner" id="spinner-${item.id}"></span>
               <label class="inline-flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" id="${item.id}" class="w-5 h-5 accent-green-600 bg-white border-gray-300 rounded"/>
                 <span class="text-sm text-gray-900">${item.label}</span>
@@ -520,7 +505,7 @@
     }
 
     // 讀取JSON設定檔並根據內容渲染面板
-    fetch('setting.json')
+    fetch('setting.json', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         // 初始化圖層相關變數
@@ -577,7 +562,7 @@
         data["life_function"].forEach(cat => {
           document.getElementById(cat["id"]).addEventListener('change', (event) => {toggle_category(event, cat["id"])});
           cat["items"].forEach(item => {
-            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, cat["label"], item["label"], cat["color"])})
+            document.getElementById(item["id"]).addEventListener('change', (event) => {toggle_shop(event, cat["label"], item["label"], cat["color"], item["query"])})
           })
         });
 

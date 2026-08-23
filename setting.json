@@ -60,10 +60,12 @@
         {
             "id": "check_market",
             "label": "大賣場",
-            "color": "#004FF0",
+            "color": "#6FA8F5",
             "items": [
                 {"id": "check_px", "label": "全聯福利中心"},
-                {"id": "check_home", "label": "家樂福"}
+                {"id": "check_home", "label": "家樂福（萬家福）", "query": "家樂福|萬家福"},
+                {"id": "check_top", "label": "頂好（樂家康）", "query": "頂好|家樂福超市|樂家康"},
+                {"id": "check_rt", "label": "大潤發（大全聯）", "query": "大潤發|大全聯"}
             ]
         },
         {
